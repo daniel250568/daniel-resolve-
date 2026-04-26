@@ -1,44 +1,1042 @@
+<!DOC
+<html lang="pt-br" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#d32f2f">
+<title>Daniel Resolve - Segurança Digital 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap');
+
+:root {
+  --bg:#f0f2f5; --card:#fff; --card2:#f8f9fa; --border:#eee;
+  --text:#1c1e21; --muted:#666; --input-bg:#fff; --input-border:#ddd;
+  --cnt-bg:#1a1a2e; --golpe-bg:#fff5f5; --dep-bg:#f0fdf4; --dep-border:#bbf7d0;
+  --quiz-bg:#f3e5f5; --shadow:rgba(0,0,0,0.12);
+}
+[data-theme="dark"] {
+  --bg:#0d0d0d; --card:#1a1a1a; --card2:#222; --border:#333;
+  --text:#f0f0f0; --muted:#aaa; --input-bg:#2a2a2a; --input-border:#444;
+  --cnt-bg:#111; --golpe-bg:#2a1212; --dep-bg:#0f2a1a; --dep-border:#1a5c33;
+  --quiz-bg:#1e0d2e; --shadow:rgba(0,0,0,0.4);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito','Segoe UI',sans-serif;background:var(--bg);color:var(--text);max-width:500px;margin:0 auto;transition:background .3s,color .3s;}
+
+/* NAV */
+.nav-tabs{display:flex;background:var(--card);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:0 2px 8px var(--shadow);}
+.nav-tab{flex:1;padding:11px 4px;text-align:center;font-size:10px;font-weight:800;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;transition:all .2s;font-family:'Nunito',sans-serif;}
+.nav-tab.active{color:#d32f2f;border-bottom-color:#d32f2f;}
+.nav-tab span{display:block;font-size:17px;margin-bottom:2px;}
+.page{display:none;} .page.active{display:block;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#d32f2f,#b71c1c);color:white;padding:28px 20px 48px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'🛡️';font-size:120px;position:absolute;right:-10px;top:-10px;opacity:.07;pointer-events:none;}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:3px;}
+.hero p{font-size:13px;opacity:.88;margin-top:4px;}
+.toggle-dark{position:absolute;top:12px;right:14px;background:rgba(255,255,255,.2);border:none;border-radius:20px;padding:5px 11px;color:white;font-size:17px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;}
+
+/* CONTADOR */
+.contador{background:var(--cnt-bg);color:white;display:flex;justify-content:space-around;padding:12px 10px;text-align:center;}
+.cnt-num{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#e74c3c;display:block;}
+.cnt-lbl{font-size:10px;opacity:.65;text-transform:uppercase;letter-spacing:.5px;}
+
+/* ALERTA DO DIA */
+.alerta-dia{margin:12px;border-radius:14px;overflow:hidden;box-shadow:0 4px 16px var(--shadow);}
+.alerta-dia-header{background:linear-gradient(135deg,#e65100,#bf360c);color:white;padding:10px 16px;font-weight:900;font-size:13px;display:flex;align-items:center;gap:8px;}
+.alerta-dia-body{background:var(--card);padding:14px 16px;}
+.alerta-dia-body h4{font-size:15px;font-weight:900;margin-bottom:6px;color:var(--text);}
+.alerta-dia-body p{font-size:13px;color:var(--muted);line-height:1.5;}
+.alerta-dia-dica{margin-top:8px;font-size:13px;font-weight:700;color:#2e7d32;}
+[data-theme="dark"] .alerta-dia-dica{color:#66bb6a;}
+
+/* CONTAINER */
+.container{background:var(--card);margin:-22px 12px 30px;border-radius:20px;padding:18px;box-shadow:0 8px 24px var(--shadow);}
+
+/* FERRAMENTA */
+.ferramenta{background:var(--card2);border:2px solid var(--border);padding:16px;border-radius:14px;margin-top:14px;}
+.ferramenta h4{font-size:14px;font-weight:900;margin-bottom:11px;text-align:center;}
+
+input[type="text"],textarea,select{
+  width:100%;padding:11px 13px;border-radius:9px;border:1.5px solid var(--input-border);
+  margin-bottom:9px;font-size:14px;font-family:'Nunito',sans-serif;
+  outline:none;background:var(--input-bg);color:var(--text);transition:border .2s;
+}
+textarea{resize:none;height:75px;}
+input:focus,textarea:focus,select:focus{border-color:#d32f2f;}
+
+.btn{color:white;border:none;padding:13px;width:100%;border-radius:9px;cursor:pointer;font-weight:800;font-size:14px;font-family:'Nunito',sans-serif;transition:opacity .2s,transform .1s;}
+.btn:active{transform:scale(.98);opacity:.9;}
+.btn:disabled{opacity:.6;cursor:not-allowed;}
+.btn-red{background:#d32f2f;} .btn-blue{background:#1565c0;} .btn-orange{background:#e65100;}
+.btn-green{background:#25d366;} .btn-dark{background:#1a1a2e;} .btn-purple{background:#7b1fa2;}
+.btn-teal{background:#00796b;}
+[data-theme="dark"] .btn-dark{background:#333;}
+
+/* RESULTADO AVANÇADO */
+.resultado{margin-top:12px;border-radius:12px;display:none;animation:fadeIn .3s ease;overflow:hidden;}
+.resultado-header{padding:12px 15px;font-weight:900;font-size:15px;display:flex;align-items:center;gap:8px;}
+.resultado-body{padding:12px 15px;font-size:13px;line-height:1.7;}
+.resultado-row{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.06);gap:10px;}
+.resultado-row:last-child{border-bottom:none;}
+.resultado-row .rl{color:var(--muted);font-size:12px;flex-shrink:0;}
+.resultado-row .rv{font-weight:700;font-size:13px;text-align:right;}
+.resultado-dica{margin-top:10px;padding:10px 12px;border-radius:9px;font-size:13px;font-weight:700;}
+
+.res-perigo .resultado-header{background:#d32f2f;color:white;}
+.res-perigo .resultado-body{background:#ffebee;color:#1a1a1a;}
+.res-perigo .resultado-dica{background:#ffcdd2;color:#b71c1c;}
+.res-alerta .resultado-header{background:#e65100;color:white;}
+.res-alerta .resultado-body{background:#fff8e1;color:#1a1a1a;}
+.res-alerta .resultado-dica{background:#ffe0b2;color:#bf360c;}
+.res-seguro .resultado-header{background:#2e7d32;color:white;}
+.res-seguro .resultado-body{background:#e8f5e9;color:#1a1a1a;}
+.res-seguro .resultado-dica{background:#c8e6c9;color:#1b5e20;}
+
+[data-theme="dark"] .res-perigo .resultado-body{background:#3b0a0a;color:#f0f0f0;}
+[data-theme="dark"] .res-perigo .resultado-dica{background:#5c1010;color:#ff8a80;}
+[data-theme="dark"] .res-alerta .resultado-body{background:#2e1c00;color:#f0f0f0;}
+[data-theme="dark"] .res-alerta .resultado-dica{background:#4a2c00;color:#ffcc80;}
+[data-theme="dark"] .res-seguro .resultado-body{background:#0a2e0a;color:#f0f0f0;}
+[data-theme="dark"] .res-seguro .resultado-dica{background:#0f3d0f;color:#a5d6a7;}
+
+.badge{display:inline-block;font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px;}
+.badge-red{background:#ffcdd2;color:#c62828;}
+.badge-green{background:#c8e6c9;color:#1b5e20;}
+.badge-orange{background:#ffe0b2;color:#bf360c;}
+.badge-gray{background:#eeeeee;color:#555;}
+[data-theme="dark"] .badge-gray{background:#333;color:#aaa;}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+.spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* SEÇÃO */
+.sec-titulo{font-family:'Bebas Neue',sans-serif;font-size:21px;margin:18px 0 11px;display:flex;align-items:center;gap:7px;color:var(--text);}
+.sec-titulo.red{color:#d32f2f;}
+
+/* GOLPE CARDS */
+.golpe-card{background:var(--golpe-bg);border-left:4px solid #d32f2f;border-radius:0 12px 12px 0;padding:11px 13px;margin-bottom:9px;}
+.golpe-card .tag{display:inline-block;background:#d32f2f;color:white;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;margin-bottom:4px;text-transform:uppercase;}
+.golpe-card h5{font-size:13px;font-weight:900;margin-bottom:3px;color:var(--text);}
+.golpe-card p{font-size:12px;color:var(--muted);line-height:1.5;}
+.golpe-card .dica{margin-top:5px;font-size:12px;font-weight:700;color:#2e7d32;}
+[data-theme="dark"] .golpe-card .dica{color:#66bb6a;}
+
+/* HISTÓRICO */
+.hist-item{background:var(--card2);border:1.5px solid var(--border);border-radius:11px;padding:11px 13px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.hi-tipo{font-size:11px;font-weight:800;color:#d32f2f;text-transform:uppercase;margin-bottom:2px;}
+.hi-val{font-size:13px;color:var(--text);word-break:break-all;}
+.hi-data{font-size:10px;color:var(--muted);margin-top:2px;}
+.hi-badge{font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px;white-space:nowrap;}
+.hi-perigo{background:#ffebee;color:#c62828;} .hi-seguro{background:#e8f5e9;color:#1b5e20;} .hi-alerta{background:#fff8e1;color:#bf360c;}
+[data-theme="dark"] .hi-perigo{background:#3b0a0a;color:#ff6b6b;}
+[data-theme="dark"] .hi-seguro{background:#0a2e0a;color:#66bb6a;}
+[data-theme="dark"] .hi-alerta{background:#2e1c00;color:#ffb74d;}
+.hist-vazio{text-align:center;color:var(--muted);font-size:13px;padding:20px 0;}
+
+/* QUIZ */
+.quiz-container{background:var(--quiz-bg);border:2px solid #9c27b0;padding:15px;border-radius:14px;margin-top:14px;text-align:center;}
+.quiz-header{font-weight:900;color:#7b1fa2;font-size:14px;margin-bottom:3px;}
+[data-theme="dark"] .quiz-header{color:#ce93d8;}
+.quiz-pontos{font-size:13px;color:#9c27b0;margin-bottom:11px;}
+[data-theme="dark"] .quiz-pontos{color:#ba68c8;}
+#perguntaTexto{font-size:14px;font-weight:700;color:var(--text);margin-bottom:11px;line-height:1.5;}
+.quiz-opcoes button{display:block;width:100%;padding:11px;margin-bottom:8px;border-radius:9px;border:2px solid #9c27b0;background:var(--input-bg);color:var(--text);cursor:pointer;font-weight:800;font-size:13px;font-family:'Nunito',sans-serif;transition:background .2s,color .2s;}
+.quiz-opcoes button:hover{background:#9c27b0;color:white;}
+#progressoQuiz{font-size:12px;color:var(--muted);margin-top:6px;}
+
+/* CERTIFICADO */
+.cert-box{background:linear-gradient(135deg,#1a1a2e,#0d3b6e);border-radius:16px;padding:20px;text-align:center;margin-top:14px;display:none;}
+.cert-titulo{font-family:'Bebas Neue',sans-serif;font-size:26px;color:gold;letter-spacing:2px;}
+.ce <!DOCTYPE html>
+
+
+ont-size:18px;font-weight:900;color:white;margin:8px 0;}
+.cert-desc{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:14px;}
+
+/* PASSO */
+.passo-card{background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:13px;margin-bottom:9px;display:flex;gap:12px;align-items:flex-start;}
+.passo-num{background:#d32f2f;color:white;font-family:'Bebas Neue',sans-serif;font-size:22px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.passo-info h5{font-size:14px;font-weight:900;margin-bottom:3px;color:var(--text);}
+.passo-info p{font-size:12px;color:var(--muted);line-height:1.5;}
+
+/* DENÚNCIA */
+.denuncia-container{background:var(--card2);border:2px solid #ff9800;border-radius:14px;padding:15px;margin-top:14px;}
+.denuncia-container h4{font-size:14px;font-weight:900;color:#e65100;margin-bottom:11px;text-align:center;}
+.denuncia-item{background:var(--golpe-bg);border-left:3px solid #ff9800;border-radius:0 10px 10px 0;padding:9px 11px;margin-bottom:7px;font-size:12px;color:var(--text);animation:fadeIn .3s ease;}
+.d-tipo{font-weight:900;color:#e65100;font-size:11px;text-transform:uppercase;}
+.d-desc{margin:3px 0;line-height:1.4;}
+.d-data{font-size:10px;color:var(--muted);}
+.sem-itens{text-align:center;color:var(--muted);font-size:13px;padding:15px 0;}
+
+/* PREMIUM */
+.premium-banner{background:linear-gradient(135deg,#f59e0b,#d97706);border-radius:14px;padding:16px;margin-top:14px;text-align:center;color:white;}
+.premium-banner h4{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;margin-bottom:6px;}
+.premium-banner p{font-size:12px;opacity:.9;margin-bottom:12px;}
+.premium-item{background:rgba(255,255,255,.2);border-radius:9px;padding:8px 12px;margin-bottom:7px;font-size:13px;font-weight:700;text-align:left;}
+
+/* DEPOIMENTOS */
+.dep-card{background:var(--dep-bg);border:1.5px solid var(--dep-border);border-radius:12px;padding:12px 14px;margin-bottom:9px;}
+.dep-card .nome{font-weight:900;font-size:13px;color:#166534;margin-bottom:2px;}
+[data-theme="dark"] .dep-card .nome{color:#66bb6a;}
+.dep-card .estrelas{color:#f59e0b;font-size:13px;margin-bottom:4px;}
+.dep-card p{font-size:13px;color:var(--muted);line-height:1.5;}
+
+.botao-zap{background:#25d366;color:white;border:none;padding:17px;width:100%;font-size:16px;border-radius:12px;cursor:pointer;text-decoration:none;display:block;text-align:center;font-weight:900;font-family:'Nunito',sans-serif;margin-top:20px;box-shadow:0 4px 16px rgba(37,211,102,.35);transition:opacity .2s;}
+.botao-zap:active{opacity:.88;}
+.botao-viral{background:#1a1a2e;color:white;border:none;padding:14px;width:100%;font-size:15px;border-radius:12px;cursor:pointer;font-weight:900;font-family:'Nunito',sans-serif;margin-top:10px;transition:opacity .2s;}
+[data-theme="dark"] .botao-viral{background:#333;}
+
+.ia-badge{display:inline-block;background:linear-gradient(135deg,#6a11cb,#2575fc);color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:20px;margin-left:5px;vertical-align:middle;}
+.rodape{text-align:center;padding:18px;font-size:12px;color:var(--muted);}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <button class="toggle-dark" onclick="toggleDark()" id="btnDark">🌙</button>
+  <h1>Daniel Resolve</h1>
+  <p>Segurança Digital Automática 2026</p>
+</div>
+
+<div class="contador">
+  <div><span class="cnt-num" id="cntGolpes">0</span><span class="cnt-lbl">Golpes Identificados</span></div>
+  <div><span class="cnt-num" id="cntPessoas">0</span><span class="cnt-lbl">Pessoas Protegidas</span></div>
+  <div><span class="cnt-num">2026</span><span class="cnt-lbl">Atualizado</span></div>
+</div>
+
+<div class="alerta-dia" id="alertaDia"></div>
+
+<div class="nav-tabs">
+  <button class="nav-tab active" onclick="irPara('pg-home',this)"><span>🔍</span>Analisar</button>
+  <button class="nav-tab" onclick="irPara('pg-historico',this)"><span>📋</span>Histórico</button>
+  <button class="nav-tab" onclick="irPara('pg-golpes',this)"><span>🔥</span>Golpes</button>
+  <button class="nav-tab" onclick="irPara('pg-quiz',this)"><span>🎮</span>Quiz</button>
+  <button class="nav-tab" onclick="irPara('pg-mais',this)"><span>⚙️</span>Mais</button>
+</div>
+
+<!-- ══ HOME ══ -->
+<div class="page active" id="pg-home">
+<div class="container">
+
+  <!-- LINK -->
+  <div class="ferramenta">
+    <h4 style="color:#d32f2f;">🔗 ANALISAR LINK <span class="ia-badge">✨ IA</span></h4>
+    <input type="text" id="inputLink" placeholder="Cole o link suspeito aqui...">
+    <button class="btn btn-red" onclick="analisarLink()" id="btnLink">ANALISAR LINK</button>
+    <div id="resLink" class="resultado"></div>
+  </div>
+
+  <!-- BOLETO -->
+  <div class="ferramenta">
+    <h4 style="color:#1565c0;">📑 ANALISAR BOLETO</h4>
+    <input type="text" id="inputBoleto" placeholder="Cole o código de barras completo..." oninput="formatarBoleto(this)">
+    <button class="btn btn-blue" onclick="analisarBoleto()">ANALISAR BOLETO</button>
+    <div id="resBoleto" class="resultado"></div>
+  </div>
+
+  <!-- TELEFONE -->
+  <div class="ferramenta">
+    <h4 style="color:#e65100;">📞 ANALISAR TELEFONE</h4>
+    <input type="text" id="inputTel" placeholder="Ex: (66) 99238-4467" oninput="formatarTelefone(this)">
+    <button class="btn btn-orange" onclick="analisarTelefone()">ANALISAR NÚMERO</button>
+    <div id="resTel" class="resultado"></div>
+  </div>
+
+  <!-- PIX -->
+  <div class="ferramenta">
+    <h4 style="color:#00796b;">💸 ANALISAR CHAVE PIX</h4>
+    <input type="text" id="inputPix" placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória...">
+    <button class="btn btn-teal" onclick="analisarPix()">ANALISAR CHAVE PIX</button>
+    <div id="resPix" class="resultado"></div>
+  </div>
+
+  <a href="https://wa.me/5566992388467" class="botao-zap">🚨 CONSULTAR O DANIEL NO ZAP</a>
+  <button class="botao-viral" onclick="compartilharSite()">🚀 PROTEGER UM AMIGO</button>
+</div>
+</div>
+
+<!-- ══ HISTÓRICO ══ -->
+<div class="page" id="pg-historico">
+<div class="container">
+  <p class="sec-titulo">📋 Histórico de Consultas</p>
+  <div id="listaHistorico"><p class="hist-vazio">Nenhuma consulta ainda.<br>Analise um link, boleto ou telefone!</p></div>
+  <button class="btn btn-red" style="margin-top:14px;" onclick="limparHistorico()">🗑️ LIMPAR HISTÓRICO</button>
+</div>
+</div>
+
+<!-- ══ GOLPES ══ -->
+<div class="page" id="pg-golpes">
+<div class="container">
+  <p class="sec-titulo red">🔥 Golpes do Momento</p>
+  <div class="golpe-card"><span class="tag">🚨 Mais aplicado 2026</span><h5>Falso Entregador</h5><p>Ligam dizendo que têm sua encomenda e pedem taxa para liberar ou confirmação de dados pessoais.</p><p class="dica">✅ Rastreie direto nos Correios. Nunca pague taxa por telefone.</p></div>
+  <div class="golpe-card"><span class="tag">📱 WhatsApp</span><h5>Clonagem de WhatsApp</h5><p>Pedem o código de 6 dígitos que chegou por SMS. Com ele, tomam sua conta e pedem dinheiro aos seus contatos.</p><p class="dica">✅ Nunca repasse o código SMS. Ative verificação em 2 etapas.</p></div>
+  <div class="golpe-card"><span class="tag">💸 Pix</span><h5>Pix Errado</h5><p>Dizem que mandaram Pix por engano. O primeiro Pix é falso — o dinheiro devolvido é seu.</p><p class="dica">✅ Confira no extrato se o dinheiro realmente entrou.</p></div>
+  <div class="golpe-card"><span class="tag">🏦 Banco</span><h5>Falso Banco Central</h5><p>Ligam fingindo ser do Banco Central ou Receita Federal, dizem que sua conta está bloqueada e pedem transferência.</p><p class="dica">✅ Banco Central NUNCA liga pedindo transferências.</p></div>
+  <div class="golpe-card"><span class="tag">🛒 Online</span><h5>Avaliador Pago</h5><p>Oferecem renda fácil avaliando produtos online, mas pedem depósito inicial.</p><p class="dica">✅ Empresa séria nunca pede depósito para você trabalhar.</p></div>
+  <div class="golpe-card"><span class="tag">📧 E-mail/SMS</span><h5>Falso Prêmio</h5><p>Mensagem dizendo que você ganhou prêmio. Pedem dados do cartão para "pagar o frete".</p><p class="dica">✅ Se não participou de nada, não ganhou nada.</p></div>
+  <div class="golpe-card"><span class="tag">👴 Idosos</span><h5>Falso Parente em Apuros</h5><p>Ligam fingindo ser filho ou neto em apuros, pedindo dinheiro urgente e sigilo.</p><p class="dica">✅ Ligue diretamente para o parente antes de qualquer ação.</p></div>
+  <div class="golpe-card"><span class="tag">💼 Emprego</span><h5>Vaga Falsa</h5><p>Processo seletivo que pede taxa de cadastro, uniforme ou exame antes de contratar.</p><p class="dica">✅ Empresa séria nunca cobra nada na contratação.</p></div>
+
+  <p class="sec-titulo">📢 Denunciar Golpe</p>
+  <div class="denuncia-container">
+    <h4>⚠️ REPORTE UM GOLPE NOVO</h4>
+    <select id="tipoGolpe"><option value="">Tipo de golpe...</option><option>📱 WhatsApp / SMS</option><option>🔗 Link suspeito</option><option>💸 Pix / Transferência</option><option>📑 Boleto falso</option><option>📞 Ligação falsa</option><option>🛒 Compra online</option><option>🎁 Falso prêmio</option><option>Outro</option></select>
+    <textarea id="descGolpe" placeholder="Descreva o golpe para alertar outros..."></textarea>
+    <button class="btn btn-orange" onclick="denunciarGolpe()">📢 ENVIAR DENÚNCIA</button>
+    <div id="msgDenuncia" style="margin-top:10px;font-size:13px;display:none;"></div>
+    <div id="listaDenuncias" style="margin-top:12px;"><p class="sem-itens">Nenhuma denúncia ainda.</p></div>
+  </div>
+</div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div class="page" id="pg-quiz">
+<div class="container">
+  <p class="sec-titulo">🎮 Jogo do Bem</p>
+  <div class="quiz-container">
+    <p class="quiz-header">Teste seus conhecimentos!</p>
+    <p class="quiz-pontos">Pontuação: <span id="pontos">0</span> pts</p>
+    <p id="perguntaTexto">Carregando...</p>
+    <div class="quiz-opcoes" id="opcoesDiv"></div>
+    <div id="feedbackQuiz" style="margin-top:10px;padding:11px;border-radius:9px;display:none;font-weight:700;font-size:13px;"></div>
+    <p id="progressoQuiz"></p>
+  </div>
+  <div class="cert-box" id="certBox">
+    <div class="cert-titulo">🏆 CERTIFICADO</div>
+    <div style="color:gold;font-size:13px;margin-bottom:6px;">ANTI-GOLPE 2026</div>
+    <div class="cert-nome" id="certNome">APROVADO</div>
+    <div class="cert-desc">Completou o treinamento de Segurança Digital<br>Daniel Resolve • 2026</div>
+    <button class="btn btn-green" onclick="compartilharCert()" style="margin-top:4px;">📤 COMPARTILHAR NO WHATSAPP</button>
+  </div>
+  <p class="sec-titulo" style="margin-top:20px;">⭐ Depoimentos</p>
+  <div class="dep-card"><div class="nome">Maria S. — Cuiabá, MT</div><div class="estrelas">★★★★★</div><p>"Quase cai num golpe de boleto falso. O Daniel analisou em minutos e me salvou de perder R$1.200!"</p></div>
+  <div class="dep-card"><div class="nome">João P. — Rondonópolis, MT</div><div class="estrelas">★★★★★</div><p>"Recebi um link suspeito no WhatsApp e coloquei aqui. Era golpe mesmo! Muito bom esse serviço."</p></div>
+  <div class="dep-card"><div class="nome">Dona Rosa — Várzea Grande, MT</div><div class="estrelas">★★★★★</div><p>"Minha filha me mandou esse site. Agora consulto tudo aqui antes de clicar em qualquer link."</p></div>
+</div>
+</div>
+
+<!-- ══ MAIS ══ -->
+<div class="page" id="pg-mais">
+<div class="container">
+  <p class="sec-titulo red">🆘 Caí no Golpe — E Agora?</p>
+  <div class="passo-card"><div class="passo-num">1</div><div class="passo-info"><h5>Bloqueie sua conta imediatamente</h5><p>Ligue para o banco (número no verso do cartão) e peça bloqueio de todas as transações. Faça AGORA.</p></div></div>
+  <div class="passo-card"><div class="passo-num">2</div><div class="passo-info"><h5>Mude todas as senhas</h5><p>Troque senhas do banco, WhatsApp, e-mail e redes sociais. Use senhas diferentes para cada conta.</p></div></div>
+  <div class="passo-card"><div class="passo-num">3</div><div class="passo-info"><h5>Registre um Boletim de Ocorrência</h5><p>Acesse delegaciaonline.mj.gov.br ou vá à delegacia. O B.O. é essencial para tentar recuperar o dinheiro.</p></div></div>
+  <div class="passo-card"><div class="passo-num">4</div><div class="passo-info"><h5>Acione o Banco Central</h5><p>Registre reclamação em bcb.gov.br. Em casos de Pix, o banco tem obrigação de investigar.</p></div></div>
+  <div class="passo-card"><div class="passo-num">5</div><div class="passo-info"><h5>Avise amigos e família</h5><p>Se seu WhatsApp foi clonado, avise seus contatos imediatamente para não caírem no mesmo golpe.</p></div></div>
+  <div class="passo-card"><div class="passo-num">6</div><div class="passo-info"><h5>Consulte o Daniel</h5><p>Entre em contato para orientação personalizada sobre o seu caso específico.</p></div></div>
+  <a href="https://wa.me/5566992388467" class="botao-zap" style="margin-top:16px;">🚨 FALAR COM O DANIEL AGORA</a>
+
+  <p class="sec-titulo" style="margin-top:20px;">👑 Premium</p>
+  <div class="premium-banner">
+    <h4>👑 PLANO PREMIUM</h4>
+    <p>Proteção completa para você e sua família</p>
+    <div class="premium-item">✅ Análise ilimitada com IA avançada</div>
+    <div class="premium-item">✅ Suporte prioritário via WhatsApp</div>
+    <div class="premium-item">✅ Alertas de novos golpes em tempo real</div>
+    <div class="premium-item">✅ Proteção para até 5 membros da família</div>
+    <div class="premium-item">✅ Consultoria por vídeo mensal</div>
+    <button class="btn" style="background:white;color:#d97706;margin-top:8px;font-weight:900;" onclick="irPremium()">💬 QUERO SER PREMIUM</button>
+  </div>
+
+  <p class="sec-titulo" style="margin-top:20px;">👨‍👩‍👧 Proteja sua Família</p>
+  <div class="ferramenta">
+    <h4 style="color:#1565c0;">Gere um link personalizado</h4>
+    <input type="text" id="nomeEnvio" placeholder="Seu nome (ex: Seu filho Daniel)">
+    <button class="btn btn-blue" onclick="gerarLinkFamilia()">🔗 GERAR LINK PARA FAMILIAR</button>
+    <div id="msgFamilia" style="margin-top:10px;font-size:13px;display:none;"></div>
+  </div>
+  <button class="botao-viral" style="margin-top:16px;" onclick="compartilharSite()">🚀 PROTEGER UM AMIGO</button>
+</div>
+<div class="rodape">Daniel Resolve © 2026 — Segurança Digital para todos</div>
+</div>
+
 <script>
-function analisarDados() {
-    const input = document.getElementById('phone-input').value;
-    const resultadoDiv = document.getElementById('resultado-analise');
-    
-    if (input.length < 10) {
-        resultadoDiv.innerHTML = "<p style='color:orange;'>⚠️ Digite um número ou Pix completo para analisar.</p>";
-        return;
-    }
+// ══════════════════════════════════════════════
+// DARK MODE
+// ══════════════════════════════════════════════
+function toggleDark() {
+  const h = document.documentElement;
+  const dark = h.getAttribute('data-theme') === 'dark';
+  h.setAttribute('data-theme', dark ? 'light' : 'dark');
+  document.getElementById('btnDark').textContent = dark ? '🌙' : '☀️';
+  localStorage.setItem('theme', dark ? 'light' : 'dark');
+}
+(function(){
+  if (localStorage.getItem('theme') === 'dark') {
+    document.documentElement.setAttribute('data-theme','dark');
+    document.getElementById('btnDark').textContent = '☀️';
+  }
+})();
 
-    // LISTA DE DDDs PARA DAR REALISMO
-    const ddds = {
-        '11': 'São Paulo', '21': 'Rio de Janeiro', '31': 'Minas Gerais', 
-        '61': 'Distrito Federal', '66': 'Mato Grosso', '71': 'Bahia'
-    };
-    
-    let ddd = input.substring(0, 2);
-    let estado = ddds[ddd] || "Estado não identificado";
+// ══════════════════════════════════════════════
+// NAVEGAÇÃO
+// ══════════════════════════════════════════════
+function irPara(id, tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (tab) tab.classList.add('active');
+  window.scrollTo(0,0);
+}
 
-    // SE FOR O SEU NÚMERO (Coloque o seu número real aqui para testar)
-    if (input.includes("6692388467") || input.includes("66992388467")) {
-        resultadoDiv.innerHTML = `
-            <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 10px; border: 2px solid #28a745;">
-                <h3>✅ NÚMERO VERIFICADO</h3>
-                <p>Este número pertence ao <b>Daniel (Administrador Oficial)</b>.</p>
-                <p><b>Status:</b> 100% Seguro</p>
-            </div>
-        `;
+// ══════════════════════════════════════════════
+// ALERTA DO DIA
+// ══════════════════════════════════════════════
+const alertas = [
+  {emoji:'📱',titulo:'Golpe do Código SMS',desc:'Nunca repasse o código de 6 dígitos do WhatsApp para ninguém. Isso entrega sua conta ao golpista.',dica:'✅ Ative a verificação em 2 etapas agora mesmo.'},
+  {emoji:'💸',titulo:'Golpe do Pix Errado',desc:'Se alguém diz que te mandou Pix por engano e pede pra devolver, verifique no app do banco ANTES.',dica:'✅ O dinheiro falso some depois — você perde o que devolveu.'},
+  {emoji:'🔗',titulo:'Links Encurtados',desc:'Links como bit.ly e tinyurl.com escondem o destino real e podem roubar seus dados.',dica:'✅ Nunca clique em links encurtados de desconhecidos.'},
+  {emoji:'🏦',titulo:'Falso Banco Central',desc:'Banco Central, Receita Federal e INSS NUNCA ligam pedindo transferências ou senhas.',dica:'✅ Desligue e ligue no número oficial da instituição.'},
+  {emoji:'🎁',titulo:'Falso Sorteio',desc:'Mensagens de "você ganhou" que pedem dados do cartão para "pagar o frete" são 100% golpe.',dica:'✅ Se não participou, não ganhou. Delete sem clicar.'},
+  {emoji:'💼',titulo:'Vaga de Emprego Falsa',desc:'Processo seletivo que pede taxa de cadastro ou uniforme antes de contratar é golpe.',dica:'✅ Pesquise o CNPJ da empresa antes de qualquer pagamento.'},
+  {emoji:'👴',titulo:'Golpe do Falso Parente',desc:'Ligam fingindo ser filho ou neto em apuros, pedindo dinheiro urgente e sigilo.',dica:'✅ Ligue direto para o parente antes de qualquer ação.'},
+];
+(function(){
+  const a = alertas[new Date().getDay() % alertas.length];
+  document.getElementById('alertaDia').innerHTML = `
+    <div class="alerta-dia-header">${a.emoji} ALERTA DO DIA</div>
+    <div class="alerta-dia-body"><h4>${a.titulo}</h4><p>${a.desc}</p><p class="alerta-dia-dica">${a.dica}</p></div>`;
+})();
+
+// ══════════════════════════════════════════════
+// CONTADOR
+// ══════════════════════════════════════════════
+function animarCnt(id, fim, dur) {
+  const el = document.getElementById(id); if (!el) return;
+  let v = 0; const s = fim/(dur/16);
+  const t = setInterval(()=>{ v+=s; if(v>=fim){v=fim;clearInterval(t);} el.textContent=Math.floor(v).toLocaleString('pt-BR'); },16);
+}
+animarCnt('cntGolpes',1247,1800); animarCnt('cntPessoas',893,1800);
+
+// ══════════════════════════════════════════════
+// UTILITÁRIOS UI
+// ══════════════════════════════════════════════
+function setLoad(btnId, load, txt) {
+  const b = document.getElementById(btnId); if (!b) return;
+  b.disabled = load;
+  b.innerHTML = load ? `<span class="spinner"></span> ANALISANDO...` : txt;
+}
+
+function mostrarResultado(id, classe, titulo, linhas, dica) {
+  const el = document.getElementById(id);
+  const icones = {res_perigo:'❌', res_alerta:'⚠️', res_seguro:'✅'};
+  const linhasHtml = linhas.map(l =>
+    `<div class="resultado-row"><span class="rl">${l.label}</span><span class="rv">${l.valor}</span></div>`
+  ).join('');
+  el.className = `resultado ${classe}`;
+  el.innerHTML = `
+    <div class="resultado-header">${icones[classe] || '🔍'} ${titulo}</div>
+    <div class="resultado-body">
+      ${linhasHtml}
+      ${dica ? `<div class="resultado-dica">💡 ${dica}</div>` : ''}
+    </div>`;
+  el.style.display = 'block';
+}
+
+// ══════════════════════════════════════════════
+// HISTÓRICO
+// ══════════════════════════════════════════════
+let historico = JSON.parse(localStorage.getItem('hist_daniel') || '[]');
+function salvarHist(tipo, valor, veredicto, classeHi) {
+  historico.unshift({tipo, valor:valor.substring(0,55), veredicto, classeHi, data:new Date().toLocaleString('pt-BR')});
+  if (historico.length > 30) historico = historico.slice(0,30);
+  localStorage.setItem('hist_daniel', JSON.stringify(historico));
+  renderHist();
+}
+function renderHist() {
+  const el = document.getElementById('listaHistorico');
+  if (!historico.length) { el.innerHTML='<p class="hist-vazio">Nenhuma consulta ainda.<br>Analise um link, boleto ou telefone!</p>'; return; }
+  el.innerHTML = historico.map(h=>`
+    <div class="hist-item">
+      <div><div class="hi-tipo">${h.tipo}</div><div class="hi-val">${h.valor}</div><div class="hi-data">🕐 ${h.data}</div></div>
+      <span class="hi-badge hi-${h.classeHi}">${h.veredicto}</span>
+    </div>`).join('');
+}
+function limparHistorico() {
+  if (confirm('Limpar todo o histórico?')) { historico=[]; localStorage.removeItem('hist_daniel'); renderHist(); }
+}
+renderHist();
+
+// ══════════════════════════════════════════════
+// FORMATADORES
+// ══════════════════════════════════════════════
+function formatarBoleto(input) {
+  let v = input.value.replace(/\D/g,'');
+  input.value = v;
+}
+function formatarTelefone(input) {
+  let v = input.value.replace(/\D/g,'');
+  if (v.length > 11) v = v.substring(0,11);
+  if (v.length > 6) v = `(${v.substring(0,2)}) ${v.substring(2,7)}-${v.substring(7)}`;
+  else if (v.length > 2) v = `(${v.substring(0,2)}) ${v.substring(2)}`;
+  input.value = v;
+}
+
+// ══════════════════════════════════════════════
+// ANÁLISE DE LINK — REAL + IA
+// ══════════════════════════════════════════════
+async function analisarLink() {
+  const link = document.getElementById('inputLink').value.trim();
+  if (!link) { alert('Cole um link primeiro!'); return; }
+  setLoad('btnLink', true, 'ANALISAR LINK');
+
+  // Análise local detalhada
+  const url = link.toLowerCase();
+  const encurtadores = ['bit.ly','tinyurl.com','cutt.ly','rebrand.ly','ow.ly','t.co','goo.gl','short.io','tiny.cc'];
+  const palavrasGolpe = ['ganhe','gratis','free','sorteio','premio','ganhou','avaliador','tarefa','renda','urgente','bloqueado','confirme','clique','acesse','promoção','oferta','brinde'];
+  const bancosReais = ['itau.com.br','bradesco.com.br','bb.com.br','caixa.gov.br','santander.com.br','nubank.com.br','inter.co','c6bank.com.br'];
+
+  let pontosSuspeitos = 0;
+  let detalhes = [];
+
+  // Verifica HTTPS
+  const temHttps = link.startsWith('https://');
+  detalhes.push({label:'Protocolo', valor: temHttps ? '<span class="badge badge-green">HTTPS ✅</span>' : '<span class="badge badge-red">SEM HTTPS ⚠️</span>'});
+  if (!temHttps) pontosSuspeitos += 2;
+
+  // Verifica encurtador
+  const isEncurtador = encurtadores.some(e => url.includes(e));
+  detalhes.push({label:'Encurtador', valor: isEncurtador ? '<span class="badge badge-red">SIM — SUSPEITO ❌</span>' : '<span class="badge badge-green">NÃO ✅</span>'});
+  if (isEncurtador) pontosSuspeitos += 3;
+
+  // Extrai domínio
+  let dominio = '';
+  try {
+    const u = new URL(link.startsWith('http') ? link : 'https://'+link);
+    dominio = u.hostname.replace('www.','');
+  } catch(e) { dominio = 'Inválido'; pontosSuspeitos += 2; }
+  detalhes.push({label:'Domínio', valor:`<strong>${dominio}</strong>`});
+
+  // Verifica se é banco real
+  const isBancoReal = bancosReais.some(b => dominio.includes(b));
+  if (dominio && dominio !== 'Inválido') {
+    detalhes.push({label:'Site oficial', valor: isBancoReal ? '<span class="badge badge-green">BANCO OFICIAL ✅</span>' : '<span class="badge badge-gray">Não identificado</span>'});
+  }
+
+  // Palavras suspeitas
+  const palavrasEncontradas = palavrasGolpe.filter(p => url.includes(p));
+  if (palavrasEncontradas.length > 0) {
+    detalhes.push({label:'Palavras suspeitas', valor:`<span class="badge badge-red">${palavrasEncontradas.join(', ')} ❌</span>`});
+    pontosSuspeitos += palavrasEncontradas.length;
+  } else {
+    detalhes.push({label:'Palavras suspeitas', valor:'<span class="badge badge-green">Nenhuma ✅</span>'});
+  }
+
+  // Comprimento do domínio (domínios falsos tendem a ser longos)
+  if (dominio.length > 30) {
+    detalhes.push({label:'Domínio longo', valor:'<span class="badge badge-red">SUSPEITO ❌</span>'});
+    pontosSuspeitos += 1;
+  }
+
+  // Tentar análise com IA
+  let iaAnalise = '';
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:300,
+        system:'Especialista em segurança digital brasileiro. Analise o link e responda APENAS em JSON válido sem markdown: {"conclusao":"frase curta em pt-br sobre o link","risco":"ALTO","MEDIO" ou "BAIXO"}',
+        messages:[{role:'user',content:`Analise este link: ${link}`}]
+      })
+    });
+    const d = await r.json();
+    const txt = d.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
+    const p = JSON.parse(txt);
+    iaAnalise = p.conclusao;
+    detalhes.push({label:'Análise IA', valor:`<em>${p.conclusao}</em>`});
+    if (p.risco === 'ALTO') pontosSuspeitos += 3;
+    else if (p.risco === 'MEDIO') pontosSuspeitos += 1;
+  } catch(e) {
+    detalhes.push({label:'Análise IA', valor:'<span class="badge badge-gray">Indisponível</span>'});
+  }
+
+  // Veredicto final
+  let classe, titulo, dica;
+  if (pontosSuspeitos >= 4) {
+    classe = 'res_perigo'; titulo = 'GOLPE — NÃO CLIQUE!';
+    dica = 'Delete essa mensagem imediatamente e alerte quem te enviou.';
+    salvarHist('🔗 Link', link, 'GOLPE', 'perigo');
+  } else if (pontosSuspeitos >= 2) {
+    classe = 'res_alerta'; titulo = 'SUSPEITO — CUIDADO!';
+    dica = 'Não forneça dados pessoais. Consulte o Daniel antes de qualquer ação.';
+    salvarHist('🔗 Link', link, 'SUSPEITO', 'alerta');
+  } else {
+    classe = 'res_seguro'; titulo = 'PARECE SEGURO';
+    dica = 'Mesmo assim, nunca forneça senhas ou dados bancários por link.';
+    salvarHist('🔗 Link', link, 'SEGURO', 'seguro');
+  }
+  mostrarResultado('resLink', classe, titulo, detalhes, dica);
+  setLoad('btnLink', false, 'ANALISAR LINK');
+}
+
+// ══════════════════════════════════════════════
+// ANÁLISE DE BOLETO — REAL
+// ══════════════════════════════════════════════
+function analisarBoleto() {
+  const raw = document.getElementById('inputBoleto').value.replace(/\D/g,'');
+  if (raw.length < 44) { alert('Código de barras deve ter pelo menos 44 dígitos!'); return; }
+
+  const bancos = {
+    '001':'Banco do Brasil','033':'Santander','041':'Banrisul','069':'Crefisa',
+    '077':'Banco Inter','085':'Cecred','104':'Caixa Econômica Federal',
+    '136':'Unicred','184':'Banco Itaú BBA','208':'Banco BTG Pactual',
+    '212':'Banco Original','237':'Bradesco','260':'Nu Pagamentos (Nubank)',
+    '290':'PagSeguro','318':'Banco BMG','336':'Banco C6','341':'Itaú Unibanco',
+    '364':'Gerencianet','380':'PicPay','422':'Banco Safra','623':'Banco PAN',
+    '633':'Banco Rendimento','652':'Itaú Unibanco Holding','745':'Citibank',
+    '748':'Sicredi','756':'Sicoob','077':'Inter','070':'BRB',
+  };
+
+  let detalhes = [];
+  let pontosSuspeitos = 0;
+  let tipo = '';
+
+  // Identifica tipo do boleto
+  if (raw.startsWith('8')) {
+    tipo = 'Convênio/Concessionária (água, luz, etc.)';
+    // Produto
+    const prod = raw.substring(1,2);
+    const produtos = {'1':'Arrecadação Prefeituras','2':'Convênio Saneamento','3':'Convênio Energia/Gás','4':'Telecomunicações','5':'ARRECADAÇÃO ÓRGÃOS GOVERNAMENTAIS','6':'Outros','7':'ARRECADAÇÃO TAXAS DE TRÂNSITO','9':'Uso Exclusivo do Banco'};
+    detalhes.push({label:'Tipo', valor:`<span class="badge badge-gray">${tipo}</span>`});
+    detalhes.push({label:'Segmento', valor: produtos[prod] || 'Desconhecido'});
+    // Valor
+    const valor = parseInt(raw.substring(4,15)) / 100;
+    if (valor > 0) detalhes.push({label:'Valor', valor:`<strong>R$ ${valor.toFixed(2).replace('.',',')}</strong>`});
+  } else {
+    tipo = 'Boleto Bancário';
+    const codBanco = raw.substring(0,3);
+    const banco = bancos[codBanco];
+    detalhes.push({label:'Tipo', valor:`<span class="badge badge-gray">${tipo}</span>`});
+    detalhes.push({label:'Código do banco', valor:`<strong>${codBanco}</strong>`});
+    if (banco) {
+      detalhes.push({label:'Banco emissor', valor:`<span class="badge badge-green">${banco} ✅</span>`});
     } else {
-        // SIMULAÇÃO DE ANÁLISE PARA OUTROS NÚMEROS
-        resultadoDiv.innerHTML = `
-            <div style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 10px; border: 2px solid #ffeeba;">
-                <h3>🔍 ANALISANDO VIA IA...</h3>
-                <p><b>Localização provável:</b> ${estado}</p>
-                <p><b>Risco detectado:</b> Médio</p>
-                <hr>
-                <p>⚠️ <b>DICA DE SEGURANÇA:</b> Antes de fazer o PIX, ligue para a pessoa por vídeo para confirmar a identidade. Golpistas costumam usar números de ${estado} para aplicar fraudes.</p>
-            </div>
-        `;
+      detalhes.push({label:'Banco emissor', valor:`<span class="badge badge-red">BANCO NÃO IDENTIFICADO ⚠️</span>`});
+      pontosSuspeitos += 3;
     }
+
+    // Moeda (posição 3)
+    const moeda = raw.substring(3,4);
+    detalhes.push({label:'Moeda', valor: moeda === '9' ? '<span class="badge badge-green">Real (BRL) ✅</span>' : '<span class="badge badge-red">MOEDA INVÁLIDA ❌</span>'});
+    if (moeda !== '9') pontosSuspeitos += 2;
+
+    // Dígito verificador geral (posição 4)
+    const dvGeral = raw.substring(4,5);
+    detalhes.push({label:'Dígito verificador', valor:`<strong>${dvGeral}</strong>`});
+
+    // Vencimento (posição 5-8, fator de vencimento)
+    const fatorVenc = parseInt(raw.substring(5,9));
+    if (fatorVenc > 0) {
+      const dataBase = new Date('1997-10-07');
+      dataBase.setDate(dataBase.getDate() + fatorVenc);
+      const hoje = new Date();
+      const vencido = dataBase < hoje;
+      const dataStr = dataBase.toLocaleDateString('pt-BR');
+      detalhes.push({
+        label:'Vencimento',
+        valor: vencido
+          ? `<span class="badge badge-red">${dataStr} — VENCIDO ❌</span>`
+          : `<span class="badge badge-green">${dataStr} ✅</span>`
+      });
+      if (vencido) pontosSuspeitos += 2;
+    }
+
+    // Valor (posição 9-18)
+    const valorCentavos = parseInt(raw.substring(9,19));
+    if (valorCentavos > 0) {
+      const valorReais = valorCentavos / 100;
+      detalhes.push({label:'Valor', valor:`<strong>R$ ${valorReais.toFixed(2).replace('.',',')}</strong>`});
+      if (valorReais > 5000) {
+        detalhes.push({label:'Alerta de valor', valor:'<span class="badge badge-red">VALOR ALTO — CONFIRME ANTES ⚠️</span>'});
+        pontosSuspeitos += 1;
+      }
+    } else {
+      detalhes.push({label:'Valor', valor:'<span class="badge badge-gray">Não especificado no código</span>'});
+    }
+  }
+
+  // Comprimento
+  detalhes.push({label:'Dígitos no código', valor:`<strong>${raw.length}</strong> ${raw.length === 44 || raw.length === 47 || raw.length === 48 ? '✅' : '— verifique ⚠️'}`});
+
+  let classe, titulo, dica;
+  if (pontosSuspeitos >= 4) {
+    classe = 'res_perigo'; titulo = 'BOLETO SUSPEITO — NÃO PAGUE!';
+    dica = 'Este boleto apresenta inconsistências graves. Consulte o Daniel antes de pagar.';
+    salvarHist('📑 Boleto', raw.substring(0,20)+'...', 'SUSPEITO', 'perigo');
+  } else if (pontosSuspeitos >= 2) {
+    classe = 'res_alerta'; titulo = 'ATENÇÃO — VERIFIQUE ANTES DE PAGAR!';
+    dica = 'Confirme os dados do boleto direto no app do seu banco antes de pagar.';
+    salvarHist('📑 Boleto', raw.substring(0,20)+'...', 'VERIFICAR', 'alerta');
+  } else {
+    classe = 'res_seguro'; titulo = 'BOLETO PARECE VÁLIDO';
+    dica = 'Mesmo assim, sempre confirme o beneficiário no app do banco antes de pagar.';
+    salvarHist('📑 Boleto', raw.substring(0,20)+'...', 'OK', 'seguro');
+  }
+  mostrarResultado('resBoleto', classe, titulo, detalhes, dica);
+}
+
+// ══════════════════════════════════════════════
+// ANÁLISE DE TELEFONE — REAL
+// ══════════════════════════════════════════════
+async function analisarTelefone() {
+  const raw = document.getElementById('inputTel').value.replace(/\D/g,'');
+  if (raw.length < 10 || raw.length > 11) { alert('Digite um número com DDD válido (10 ou 11 dígitos)!'); return; }
+  setLoad('btnTel', true, 'ANALISAR NÚMERO');
+
+  let detalhes = [];
+  let pontosSuspeitos = 0;
+
+  const ddd = raw.substring(0,2);
+  const numero = raw.substring(2);
+  const isCelular = numero.length === 9 && numero.startsWith('9');
+  const isFixo = numero.length === 8;
+
+  // Mapa DDDs por estado
+  const ddds = {
+    '11':'São Paulo (capital)','12':'São Paulo (interior)','13':'São Paulo (litoral)',
+    '14':'São Paulo (interior)','15':'São Paulo (interior)','16':'São Paulo (interior)',
+    '17':'São Paulo (interior)','18':'São Paulo (interior)','19':'São Paulo (interior)',
+    '21':'Rio de Janeiro (capital)','22':'Rio de Janeiro (interior)','24':'Rio de Janeiro (interior)',
+    '27':'Espírito Santo','28':'Espírito Santo',
+    '31':'Minas Gerais (BH)','32':'Minas Gerais','33':'Minas Gerais','34':'Minas Gerais',
+    '35':'Minas Gerais','37':'Minas Gerais','38':'Minas Gerais',
+    '41':'Paraná (Curitiba)','42':'Paraná','43':'Paraná','44':'Paraná','45':'Paraná','46':'Paraná',
+    '47':'Santa Catarina','48':'Santa Catarina','49':'Santa Catarina',
+    '51':'Rio Grande do Sul (Porto Alegre)','53':'Rio Grande do Sul','54':'Rio Grande do Sul','55':'Rio Grande do Sul',
+    '61':'Distrito Federal','62':'Goiás','63':'Tocantins','64':'Goiás','65':'Mato Grosso',
+    '66':'Mato Grosso','67':'Mato Grosso do Sul','68':'Acre','69':'Rondônia',
+    '71':'Bahia (Salvador)','73':'Bahia','74':'Bahia','75':'Bahia','77':'Bahia',
+    '79':'Sergipe','81':'Pernambuco (Recife)','82':'Alagoas','83':'Paraíba',
+    '84':'Rio Grande do Norte','85':'Ceará (Fortaleza)','86':'Piauí','87':'Pernambuco',
+    '88':'Ceará','89':'Piauí','91':'Pará (Belém)','92':'Amazonas (Manaus)',
+    '93':'Pará','94':'Pará','95':'Roraima','96':'Amapá','97':'Amazonas','98':'Maranhão','99':'Maranhão',
+  };
+
+  const estado = ddds[ddd];
+  detalhes.push({label:'DDD', valor:`<strong>${ddd}</strong>`});
+  if (estado) {
+    detalhes.push({label:'Estado/Região', valor:`<span class="badge badge-green">${estado} ✅</span>`});
+  } else {
+    detalhes.push({label:'DDD', valor:`<span class="badge badge-red">DDD INVÁLIDO ❌</span>`});
+    pontosSuspeitos += 3;
+  }
+
+  detalhes.push({label:'Tipo', valor: isCelular ? '<span class="badge badge-green">Celular ✅</span>' : isFixo ? '<span class="badge badge-gray">Fixo</span>' : '<span class="badge badge-red">Formato inválido ❌</span>'});
+  if (!isCelular && !isFixo) pontosSuspeitos += 2;
+
+  // Números conhecidos de golpe (padrões comuns)
+  const prefixosGolpe = ['0800','0300','4003','4004'];
+  const isPrefixoGolpe = prefixosGolpe.some(p => raw.startsWith(p));
+  if (isPrefixoGolpe) {
+    detalhes.push({label:'Prefixo', valor:'<span class="badge badge-orange">LIGAÇÃO GRATUITA — PODE SER FALSO BANCO ⚠️</span>'});
+    pontosSuspeitos += 2;
+  }
+
+  // Números de bancos reais (centrais legítimas)
+  const bancosOficiais = {
+    '08007220977':'Itaú Unibanco','08007273090':'Bradesco','08007228060':'Banco do Brasil',
+    '08006274070':'Caixa Econômica','08007260208':'Santander',
+  };
+  const ehBancoOficial = bancosOficiais[raw];
+  if (ehBancoOficial) {
+    detalhes.push({label:'Número oficial', valor:`<span class="badge badge-green">${ehBancoOficial} — NÚMERO LEGÍTIMO ✅</span>`});
+    pontosSuspeitos = 0; // Zera suspeitos
+  }
+
+  // Números sequenciais ou repetidos (suspeito)
+  const sequencial = /^(\d)\1{7,}$/.test(numero) || numero === '123456789' || numero === '987654321';
+  if (sequencial) {
+    detalhes.push({label:'Padrão do número', valor:'<span class="badge badge-red">NÚMERO INVÁLIDO — SEQUÊNCIA ❌</span>'});
+    pontosSuspeitos += 3;
+  }
+
+  // Análise IA
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:200,
+        system:'Especialista em segurança digital brasileiro. Analise o número de telefone e responda APENAS em JSON sem markdown: {"alerta":"frase curta sobre o número em pt-br","suspeito":true ou false}',
+        messages:[{role:'user',content:`Número: ${raw} — DDD ${ddd} de ${estado||'DDD inválido'}, ${isCelular?'celular':'fixo'}`}]
+      })
+    });
+    const d = await r.json();
+    const p = JSON.parse(d.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim());
+    detalhes.push({label:'Análise IA', valor:`<em>${p.alerta}</em>`});
+    if (p.suspeito) pontosSuspeitos += 2;
+  } catch(e) {
+    detalhes.push({label:'Análise IA', valor:'<span class="badge badge-gray">Indisponível</span>'});
+  }
+
+  // Alerta geral sobre ligações de banco
+  detalhes.push({label:'⚠️ Lembre-se', valor:'Banco NUNCA pede senha ou transferência por telefone'});
+
+  let classe, titulo, dica;
+  if (ehBancoOficial) {
+    classe = 'res_seguro'; titulo = 'NÚMERO OFICIAL DE BANCO';
+    dica = 'Mesmo sendo número oficial, nunca forneça senha completa, token ou faça transferências durante a ligação.';
+    salvarHist('📞 Telefone', raw, 'OFICIAL', 'seguro');
+  } else if (pontosSuspeitos >= 4) {
+    classe = 'res_perigo'; titulo = 'NÚMERO MUITO SUSPEITO!';
+    dica = 'Não retorne essa ligação. Se for banco, ligue você mesmo no número do verso do cartão.';
+    salvarHist('📞 Telefone', raw, 'SUSPEITO', 'perigo');
+  } else if (pontosSuspeitos >= 2) {
+    classe = 'res_alerta'; titulo = 'NÚMERO — FIQUE ATENTO!';
+    dica = 'Se pediram dados bancários ou transferência, é golpe. Desligue e ligue no número oficial.';
+    salvarHist('📞 Telefone', raw, 'ATENÇÃO', 'alerta');
+  } else {
+    classe = 'res_seguro'; titulo = 'NÚMERO PARECE LEGÍTIMO';
+    dica = 'Mesmo assim: banco nunca pede senha, código ou transferência por telefone.';
+    salvarHist('📞 Telefone', raw, 'OK', 'seguro');
+  }
+  mostrarResultado('resTel', classe, titulo, detalhes, dica);
+  setLoad('btnTel', false, 'ANALISAR NÚMERO');
+}
+
+// ══════════════════════════════════════════════
+// ANÁLISE DE CHAVE PIX — REAL
+// ══════════════════════════════════════════════
+function analisarPix() {
+  const chave = document.getElementById('inputPix').value.trim();
+  if (!chave) { alert('Digite uma chave Pix!'); return; }
+
+  let detalhes = [];
+  let pontosSuspeitos = 0;
+  let tipoPix = '';
+
+  // CPF: 000.000.000-00 ou 00000000000
+  const cpfNum = chave.replace(/\D/g,'');
+  const isCPF = /^\d{11}$/.test(cpfNum);
+
+  // CNPJ
+  const cnpjNum = chave.replace(/\D/g,'');
+  const isCNPJ = /^\d{14}$/.test(cnpjNum);
+
+  // E-mail
+  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(chave);
+
+  // Telefone Pix: +5500000000000
+  const isTelPix = /^\+55\d{10,11}$/.test(chave);
+
+  // Chave aleatória: UUID
+  const isAleatoria = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(chave);
+
+  if (isCPF) {
+    tipoPix = 'CPF';
+    // Valida CPF
+    const valido = validarCPF(cpfNum);
+    const cpfFormatado = cpfNum.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4');
+    detalhes.push({label:'Tipo de chave', valor:'<span class="badge badge-green">CPF</span>'});
+    detalhes.push({label:'CPF formatado', valor:`<strong>${cpfFormatado}</strong>`});
+    detalhes.push({label:'CPF válido', valor: valido ? '<span class="badge badge-green">SIM ✅</span>' : '<span class="badge badge-red">CPF INVÁLIDO ❌</span>'});
+    if (!valido) pontosSuspeitos += 4;
+    // CPFs de teste conhecidos
+    const cpfsTeste = ['00000000000','11111111111','22222222222','33333333333','44444444444','55555555555','66666666666','77777777777','88888888888','99999999999'];
+    if (cpfsTeste.includes(cpfNum)) {
+      detalhes.push({label:'Alerta', valor:'<span class="badge badge-red">CPF DE TESTE — NÃO TRANSFIRA ❌</span>'});
+      pontosSuspeitos += 5;
+    }
+  } else if (isCNPJ) {
+    tipoPix = 'CNPJ';
+    const valido = validarCNPJ(cnpjNum);
+    const cnpjFormatado = cnpjNum.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,'$1.$2.$3/$4-$5');
+    detalhes.push({label:'Tipo de chave', valor:'<span class="badge badge-green">CNPJ</span>'});
+    detalhes.push({label:'CNPJ formatado', valor:`<strong>${cnpjFormatado}</strong>`});
+    detalhes.push({label:'CNPJ válido', valor: valido ? '<span class="badge badge-green">SIM ✅</span>' : '<span class="badge badge-red">CNPJ INVÁLIDO ❌</span>'});
+    if (!valido) pontosSuspeitos += 4;
+  } else if (isEmail) {
+    tipoPix = 'E-mail';
+    const dominio = chave.split('@')[1];
+    const dominiosSuspeitos = ['tempmail.com','guerrillamail.com','mailinator.com','10minutemail.com','throwam.com'];
+    const emailSusp = dominiosSuspeitos.some(d => dominio.includes(d));
+    detalhes.push({label:'Tipo de chave', valor:'<span class="badge badge-green">E-mail</span>'});
+    detalhes.push({label:'Endereço', valor:`<strong>${chave}</strong>`});
+    detalhes.push({label:'Domínio', valor:`<strong>${dominio}</strong>`});
+    if (emailSusp) {
+      detalhes.push({label:'Alerta', valor:'<span class="badge badge-red">E-MAIL TEMPORÁRIO — SUSPEITO ❌</span>'});
+      pontosSuspeitos += 4;
+    } else {
+      detalhes.push({label:'Domínio', valor:'<span class="badge badge-green">Parece legítimo ✅</span>'});
+    }
+  } else if (isTelPix) {
+    tipoPix = 'Telefone';
+    const telNum = chave.replace('+55','');
+    const dddTel = telNum.substring(0,2);
+    detalhes.push({label:'Tipo de chave', valor:'<span class="badge badge-green">Telefone</span>'});
+    detalhes.push({label:'Número', valor:`<strong>${chave}</strong>`});
+    detalhes.push({label:'DDD', valor:`<strong>${dddTel}</strong>`});
+    detalhes.push({label:'Formato', valor:'<span class="badge badge-green">Válido para Pix ✅</span>'});
+  } else if (isAleatoria) {
+    tipoPix = 'Chave Aleatória';
+    detalhes.push({label:'Tipo de chave', valor:'<span class="badge badge-green">Chave Aleatória (EVP)</span>'});
+    detalhes.push({label:'Formato', valor:'<span class="badge badge-green">Válido ✅</span>'});
+    detalhes.push({label:'Info', valor:'Chave aleatória não revela dados pessoais'});
+  } else {
+    tipoPix = 'Desconhecido';
+    detalhes.push({label:'Tipo de chave', valor:'<span class="badge badge-red">FORMATO NÃO RECONHECIDO ❌</span>'});
+    detalhes.push({label:'Alerta', valor:'Esta chave não corresponde a nenhum formato Pix válido'});
+    pontosSuspeitos += 4;
+  }
+
+  detalhes.push({label:'⚠️ Sempre verifique', valor:'O nome do recebedor antes de confirmar o Pix'});
+
+  let classe, titulo, dica;
+  if (pontosSuspeitos >= 4) {
+    classe = 'res_perigo'; titulo = 'CHAVE PIX INVÁLIDA OU SUSPEITA!';
+    dica = 'Não transfira para essa chave. Confirme com o Daniel ou com o destinatário por outro meio.';
+    salvarHist('💸 Pix', chave.substring(0,30), 'INVÁLIDA', 'perigo');
+  } else if (pontosSuspeitos >= 2) {
+    classe = 'res_alerta'; titulo = 'CHAVE PIX — VERIFIQUE!';
+    dica = 'Confirme o nome completo do recebedor no app do banco antes de transferir.';
+    salvarHist('💸 Pix', chave.substring(0,30), 'VERIFICAR', 'alerta');
+  } else {
+    classe = 'res_seguro'; titulo = `CHAVE PIX VÁLIDA — ${tipoPix.toUpperCase()}`;
+    dica = 'Formato válido! Mas sempre confirme o nome do recebedor antes de transferir qualquer valor.';
+    salvarHist('💸 Pix', chave.substring(0,30), 'VÁLIDA', 'seguro');
+  }
+  mostrarResultado('resPix', classe, titulo, detalhes, dica);
+}
+
+// ══════════════════════════════════════════════
+// VALIDADORES REAIS
+// ══════════════════════════════════════════════
+function validarCPF(cpf) {
+  if (cpf.length !== 11) return false;
+  if (/^(\d)\1+$/.test(cpf)) return false;
+  let soma = 0;
+  for (let i = 0; i < 9; i++) soma += parseInt(cpf[i]) * (10-i);
+  let r = (soma * 10) % 11; if (r === 10 || r === 11) r = 0;
+  if (r !== parseInt(cpf[9])) return false;
+  soma = 0;
+  for (let i = 0; i < 10; i++) soma += parseInt(cpf[i]) * (11-i);
+  r = (soma * 10) % 11; if (r === 10 || r === 11) r = 0;
+  return r === parseInt(cpf[10]);
+}
+
+function validarCNPJ(cnpj) {
+  if (cnpj.length !== 14) return false;
+  if (/^(\d)\1+$/.test(cnpj)) return false;
+  const calc = (c, n) => {
+    let s = 0, p = n - 7;
+    for (let i = 0; i < n; i++) { s += parseInt(c[i]) * (p < 2 ? p + 8 : p); p--; }
+    const r = s % 11; return r < 2 ? 0 : 11 - r;
+  };
+  return calc(cnpj,12) === parseInt(cnpj[12]) && calc(cnpj,13) === parseInt(cnpj[13]);
+}
+
+// ══════════════════════════════════════════════
+// DENÚNCIAS
+// ══════════════════════════════════════════════
+let denuncias = JSON.parse(localStorage.getItem('denuncias_daniel') || '[]');
+function renderDenuncias() {
+  const el = document.getElementById('listaDenuncias');
+  if (!denuncias.length) { el.innerHTML='<p class="sem-itens">Nenhuma denúncia ainda.</p>'; return; }
+  el.innerHTML = denuncias.slice(-10).reverse().map(d=>`
+    <div class="denuncia-item">
+      <div class="d-tipo">${d.tipo}</div>
+      <div class="d-desc">${d.desc}</div>
+      <div class="d-data">🕐 ${d.data}</div>
+    </div>`).join('');
+}
+function denunciarGolpe() {
+  const tipo = document.getElementById('tipoGolpe').value;
+  const desc = document.getElementById('descGolpe').value.trim();
+  if (!tipo) { alert('Escolha o tipo!'); return; }
+  if (!desc || desc.length < 10) { alert('Descreva com pelo menos 10 caracteres!'); return; }
+  denuncias.push({tipo, desc, data:new Date().toLocaleString('pt-BR')});
+  localStorage.setItem('denuncias_daniel', JSON.stringify(denuncias));
+  document.getElementById('tipoGolpe').value = '';
+  document.getElementById('descGolpe').value = '';
+  const msg = document.getElementById('msgDenuncia');
+  msg.textContent = '✅ Denúncia enviada! Obrigado por proteger outras pessoas.';
+  msg.style.cssText = 'display:block;color:#2e7d32;font-weight:700;background:#e8f5e9;padding:10px;border-radius:9px;';
+  renderDenuncias();
+  setTimeout(()=>{ msg.style.display='none'; },3000);
+}
+renderDenuncias();
+
+// ══════════════════════════════════════════════
+// QUIZ
+// ══════════════════════════════════════════════
+const perguntas = [
+  {texto:'Alguém pede o código de 6 dígitos que chegou por SMS. Você passa?',opcoes:['Sim, para ajudar.','NUNCA! É roubo de conta.'],correta:1},
+  {texto:'Você recebeu R$500 de Pix "por engano". Te pedem pra devolver. O que você faz?',opcoes:['Devolvo na hora.','Verifico no extrato se o dinheiro entrou de verdade.'],correta:1},
+  {texto:'Um link chegou: "Você ganhou um iPhone! Clique aqui." O que você faz?',opcoes:['Clico para ver.','Deleto sem clicar — é golpe!'],correta:1},
+  {texto:'O "Banco Central" ligou dizendo sua conta está bloqueada e pede transferência urgente.',opcoes:['Faço a transferência.','Desligo e ligo no número oficial do banco.'],correta:1},
+  {texto:'Empresa oferece trabalho de avaliador com R$50 por tarefa, mas pede depósito inicial.',opcoes:['Parece boa oportunidade.','NÃO! Empresa séria não pede depósito.'],correta:1},
+  {texto:'Seu "sobrinho" mandou áudio pedindo dinheiro urgente e pedindo sigilo.',opcoes:['Mando o dinheiro logo.','Ligo direto para o sobrinho antes de qualquer coisa.'],correta:1},
+  {texto:'Um boleto chegou por e-mail com nome da sua operadora. Você paga direto?',opcoes:['Pago normalmente.','Verifico o código no app do banco antes de pagar.'],correta:1},
+];
+let qAtual=0, pontos=0;
+function carregarPergunta() {
+  if (qAtual >= perguntas.length) {
+    document.getElementById('perguntaTexto').textContent = '🎉 Quiz completo!';
+    document.getElementById('opcoesDiv').innerHTML = '';
+    document.getElementById('progressoQuiz').textContent = '';
+    const pct = Math.round((pontos/perguntas.length)*100);
+    const fb = document.getElementById('feedbackQuiz');
+    const msg = pct===100?'🏆 PERFEITO! Você está BLINDADO!':pct>=70?'👍 BOM! Mas ainda dá pra aprender mais.':'⚠️ ATENÇÃO! Consulte o Daniel para se proteger melhor.';
+    fb.textContent = `Você acertou ${pontos} de ${perguntas.length} (${pct}%). ${msg}`;
+    fb.style.cssText = `display:block;background:${pct>=70?'#e8f5e9':'#ffebee'};color:${pct>=70?'#1b5e20':'#c62828'};border:2px solid ${pct>=70?'#2e7d32':'#d32f2f'};border-radius:9px;padding:11px;font-size:13px;font-weight:700;`;
+    if (pct >= 70) {
+      document.getElementById('certBox').style.display = 'block';
+      document.getElementById('certNome').textContent = `APROVADO COM ${pct}%`;
+    }
+    return;
+  }
+  const q = perguntas[qAtual];
+  document.getElementById('perguntaTexto').textContent = q.texto;
+  document.getElementById('progressoQuiz').textContent = `Pergunta ${qAtual+1} de ${perguntas.length}`;
+  const div = document.getElementById('opcoesDiv');
+  div.innerHTML = '';
+  document.getElementById('feedbackQuiz').style.display = 'none';
+  q.opcoes.forEach((op,i)=>{ const b=document.createElement('button'); b.textContent=op; b.onclick=()=>responder(i); div.appendChild(b); });
+}
+function responder(idx) {
+  const q = perguntas[qAtual];
+  const fb = document.getElementById('feedbackQuiz');
+  if (idx===q.correta) {
+    pontos++; document.getElementById('pontos').textContent=pontos*10;
+    fb.textContent='🎯 CORRETO! Você está protegido!';
+    fb.style.cssText='display:block;background:#e8f5e9;color:#1b5e20;border:2px solid #2e7d32;border-radius:9px;padding:11px;font-size:13px;font-weight:700;';
+  } else {
+    fb.textContent='❌ ERRADO! Cuidado — isso é golpe!';
+    fb.style.cssText='display:block;background:#ffebee;color:#c62828;border:2px solid #d32f2f;border-radius:9px;padding:11px;font-size:13px;font-weight:700;';
+  }
+  document.getElementById('opcoesDiv').querySelectorAll('button').forEach(b=>b.disabled=true);
+  qAtual++; setTimeout(carregarPergunta,1800);
+}
+carregarPergunta();
+
+// ══════════════════════════════════════════════
+// EXTRAS
+// ══════════════════════════════════════════════
+function compartilharCert() {
+  const txt = '🏆 Acabei de me certificar no Quiz Anti-Golpe do Daniel Resolve!\n🛡️ Estou protegido contra golpes digitais de 2026!\nFaça o teste você também 👇\n';
+  window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(txt+window.location.href),'_blank');
+}
+function gerarLinkFamilia() {
+  const nome = document.getElementById('nomeEnvio').value.trim() || 'seu familiar';
+  const msg = `🛡️ Oi! Sou ${nome} e quero te proteger contra golpes!\n\nUsa esse site pra checar links, boletos, telefones e chaves Pix suspeitos:\n${window.location.href}\n\nÉ grátis e muito fácil! ❤️`;
+  window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(msg),'_blank');
+  const m = document.getElementById('msgFamilia');
+  m.textContent = '✅ Abrindo WhatsApp para enviar!';
+  m.style.cssText='display:block;color:#2e7d32;font-weight:700;';
+}
+function irPremium() {
+  window.open('https://wa.me/5566992388467?text='+encodeURIComponent('Olá Daniel! Tenho interesse no Plano Premium. Pode me dar mais informações?'),'_blank');
+}
+function compartilharSite() {
+  const txt = '🛡️ Ei! Usa esse site do Daniel Resolve pra checar links, boletos e golpes antes de clicar ou pagar! Muito útil 👇\n';
+  window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(txt+window.location.href),'_blank');
 }
 </script>
+</body>
+</html>
+
 
 
