@@ -3,134 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShieldBR V3 - PRO</title>
+    <title>ShieldBR V3 - Ultimate Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --roxo: #6a0dad; --verde: #00ff00; --fundo: #0a0a0a; --card: #161616; --texto: #ffffff; }
-        body { background: var(--fundo); color: var(--texto); font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
-        .header { text-align: center; padding: 20px; background: var(--card); border-bottom: 1px solid #222; }
-        .badge-online { background: #004400; color: var(--verde); padding: 5px 15px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; }
-        .container { padding: 15px; display: none; min-height: 80vh; }
-        .container.active { display: block; animation: fadeIn 0.3s ease; }
-        .card { background: var(--card); border-radius: 18px; padding: 20px; margin-bottom: 15px; border: 1px solid #222; }
-        textarea { width: 100%; background: #000; border: 1px solid #333; color: white; padding: 15px; border-radius: 12px; font-size: 1rem; box-sizing: border-box; outline: none; }
-        .btn-ia { background: var(--roxo); color: white; border: none; padding: 18px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 10px; }
-        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #111; display: grid; grid-template-columns: repeat(6, 1fr); padding: 10px 0; border-top: 1px solid #333; z-index: 1000; }
-        .nav-item { color: #555; text-align: center; font-size: 0.6rem; cursor: pointer; border: none; background: none; }
-        .nav-item.active { color: var(--verde); }
-        .nav-item i { font-size: 1.2rem; display: block; margin-bottom: 4px; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        #resIA { margin-top: 15px; padding: 15px; border-radius: 12px; background: #1a1a1a; display: none; border-left: 5px solid var(--verde); line-height: 1.5; }
+        :root { --roxo: #8a2be2; --verde: #00ff00; --fundo: #050505; --card: #121212; --danger: #ff0000; --neon: 0 0 15px #8a2be2; }
+        
+        body { background: var(--fundo); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 90px; }
+
+        /* Header Chique com Brilho */
+        .header { text-align: center; padding: 25px; background: var(--card); border-bottom: 2px solid var(--roxo); box-shadow: var(--neon); }
+        .status-dot { color: var(--verde); font-size: 0.7rem; font-weight: bold; letter-spacing: 2px; }
+
+        /* Containers das Abas */
+        .container { padding: 15px; display: none; }
+        .container.active { display: block; animation: zoomIn 0.3s ease; }
+
+        /* Cards Estilizados */
+        .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #222; box-shadow: 0 5px 15px rgba(0,0,0,0.8); }
+        h3 { color: var(--roxo); margin-top: 0; display: flex; align-items: center; gap: 10px; }
+
+        /* Inputs e Botões de Luxo */
+        textarea { width: 100%; background: #000; border: 1px solid #333; color: var(--verde); padding: 15px; border-radius: 15px; font-size: 1rem; outline: none; box-sizing: border-box; }
+        .btn-acao { background: linear-gradient(45deg, var(--roxo), #4b0082); color: white; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 15px; box-shadow: var(--neon); }
+        .btn-whatsapp { background: #25d366; color: white; border: none; padding: 15px; width: 100%; border-radius: 15px; font-weight: bold; margin-top: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; }
+
+        /* Menu de Navegação - FUNCIONAL */
+        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #111; display: grid; grid-template-columns: repeat(6, 1fr); padding: 12px 0; border-top: 1px solid #333; z-index: 1000; }
+        .nav-item { color: #666; text-align: center; font-size: 0.6rem; cursor: pointer; background: none; border: none; }
+        .nav-item.active { color: var(--verde); text-shadow: 0 0 10px var(--verde); }
+        .nav-item i { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+
+        #resIA { margin-top: 15px; padding: 15px; border-radius: 15px; background: #0a0a0a; display: none; border: 1px solid var(--verde); line-height: 1.6; font-size: 0.95rem; }
+        
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <span class="badge-online">● SISTEMA PROTEGIDO</span>
-        <h2 style="margin:10px 0 0 0;">ShieldBR <span style="color:var(--roxo)">PRO</span></h2>
+        <div class="status-dot">● SISTEMA ATIVO</div>
+        <h1 style="margin:5px 0;">ShieldBR <span style="color:var(--roxo)">PRO</span></h1>
     </div>
 
     <div id="aba-ia" class="container active">
         <div class="card">
-            <h3>🔍 Analisador Pro</h3>
-            <textarea id="inputIA" rows="5" placeholder="Cole Pix, Links ou Mensagens..."></textarea>
-            <button class="btn-ia" onclick="rodarIA()">ESCANEAR AGORA</button>
+            <h3><i class="fas fa-brain"></i> Analisador Mestre</h3>
+            <p style="color:#888; font-size:0.8rem;">Analise CNPJ, Pix, Boletos, Links e Texto de Prints.</p>
+            <textarea id="inputIA" rows="5" placeholder="Cole qualquer conteúdo suspeito aqui..."></textarea>
+            <button class="btn-acao" onclick="rodarIA()">VARREDURA COMPLETA</button>
             <div id="resIA"></div>
+        </div>
+
+        <div class="card">
+            <h3><i class="fab fa-whatsapp"></i> Suporte Daniel</h3>
+            <p style="color:#888; font-size:0.8rem;">Dúvidas? Mande um Zap direto para o desenvolvedor.</p>
+            <a href="https://wa.me/5511999999999" class="btn-whatsapp">
+                <i class="fab fa-whatsapp" style="font-size:1.5rem"></i> FALAR COM DANIEL
+            </a>
         </div>
     </div>
 
     <div id="aba-radar" class="container">
         <div class="card">
-            <h3>📊 Radar de Golpes</h3>
+            <h3><i class="fas fa-chart-line"></i> Radar de Golpes</h3>
             <canvas id="meuGrafico"></canvas>
         </div>
     </div>
 
     <div id="aba-tools" class="container">
         <div class="card">
-            <h3>🛠️ Ferramentas</h3>
-            <p>Gerador de Senha e Verificador de CNPJ em breve.</p>
+            <h3><i class="fas fa-toolbox"></i> Ferramentas Pro</h3>
+            <button class="btn-acao" style="background:#222; border:1px solid var(--roxo)">🔐 Gerador de Senha</button>
+            <button class="btn-acao" style="background:#222; border:1px solid var(--roxo)">🔍 Verificador de CNPJ</button>
         </div>
     </div>
 
     <div id="aba-mural" class="container">
         <div class="card">
-            <h3>👥 Denúncias Recentes</h3>
-            <p>• Falso Brinde de Perfume (WhatsApp)</p>
-            <p>• Golpe do Pix Agendado</p>
+            <h3><i class="fas fa-users"></i> Mural da Comunidade</h3>
+            <p>• Golpe do Pix de R$ 1,00 (Detectado)</p>
+            <p>• Falso Suporte da Netflix (Detectado)</p>
         </div>
     </div>
 
     <div id="aba-guia" class="container">
         <div class="card">
-            <h3>📚 Manual de Defesa</h3>
-            <p>Nunca informe senhas por telefone.</p>
+            <h3><i class="fas fa-book"></i> Guia Antigolpe</h3>
+            <p>Leia nossas dicas para nunca mais ser enganado.</p>
         </div>
     </div>
 
     <div id="aba-premium" class="container">
-        <div class="card" style="text-align: center;">
-            <i class="fas fa-crown" style="font-size: 2rem; color: gold;"></i>
-            <h3>Conta Business</h3>
-            <p>Nível Profissional Ativado</p>
+        <div class="card" style="text-align:center;">
+            <i class="fas fa-crown" style="font-size:4rem; color:gold; margin-bottom:15px;"></i>
+            <h2>PLANO BUSINESS</h2>
+            <p style="color:var(--verde)">Acesso vitalício liberado.</p>
         </div>
     </div>
 
     <nav class="nav-bottom">
-        <div class="nav-item active" onclick="mudarAba('aba-ia', this)"><i class="fas fa-bolt"></i>IA</div>
-        <div class="nav-item" onclick="mudarAba('aba-radar', this)"><i class="fas fa-chart-pie"></i>Radar</div>
-        <div class="nav-item" onclick="mudarAba('aba-tools', this)"><i class="fas fa-toolbox"></i>Tools</div>
-        <div class="nav-item" onclick="mudarAba('aba-mural', this)"><i class="fas fa-users"></i>Mural</div>
-        <div class="nav-item" onclick="mudarAba('aba-guia', this)"><i class="fas fa-book"></i>Guia</div>
-        <div class="nav-item" onclick="mudarAba('aba-premium', this)"><i class="fas fa-crown"></i>Premium</div>
+        <div class="nav-item active" onclick="trocarAba('aba-ia', this)"><i class="fas fa-shield-alt"></i>IA</div>
+        <div class="nav-item" onclick="trocarAba('aba-radar', this)"><i class="fas fa-satellite-dish"></i>Radar</div>
+        <div class="nav-item" onclick="trocarAba('aba-tools', this)"><i class="fas fa-tools"></i>Tools</div>
+        <div class="nav-item" onclick="trocarAba('aba-mural', this)"><i class="fas fa-bullhorn"></i>Mural</div>
+        <div class="nav-item" onclick="trocarAba('aba-guia', this)"><i class="fas fa-graduation-cap"></i>Guia</div>
+        <div class="nav-item" onclick="trocarAba('aba-premium', this)"><i class="fas fa-star"></i>Pro</div>
     </nav>
 
     <script>
         const API_KEY = "AIzaSyALrqcdO4JYfwdXl3eO-YQQJcwpqOxzHxc";
 
-        function mudarAba(id, elemento) {
-            document.querySelectorAll('.container').forEach(aba => aba.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        // FUNÇÃO DE TROCAR ABA QUE FUNCIONA
+        function trocarAba(id, el) {
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            elemento.classList.add('active');
-            if(id === 'aba-radar') carregarGrafico();
+            el.classList.add('active');
+            if(id === 'aba-radar') desenharGrafico();
         }
 
         async function rodarIA() {
-            const texto = document.getElementById('inputIA').value;
-            const res = document.getElementById('resIA');
-            if(!texto) return;
+            const promptInput = document.getElementById('inputIA').value;
+            const resDiv = document.getElementById('resIA');
+            if(!promptInput) return alert("Cole algo para analisar!");
 
-            res.style.display = "block";
-            res.innerHTML = "📡 Consultando base de dados...";
+            resDiv.style.display = "block";
+            resDiv.innerHTML = "<i class='fas fa-sync fa-spin'></i> Analisando com IA...";
+
+            const corpoMensagem = {
+                contents: [{ parts: [{ text: "Você é o ShieldBR. Analise se isso é golpe: " + promptInput + ". Responda se é SEGURO ou GOLPE e explique para um idoso." }] }]
+            };
 
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: "Resuma em uma frase se isso é golpe e explique para um idoso: " + texto }] }] })
+                    body: JSON.stringify(corpoMensagem)
                 });
+                
                 const data = await response.json();
-                res.innerHTML = "🛡️ <b>RESULTADO:</b><br><br>" + data.candidates[0].content.parts[0].text;
-            } catch (e) {
-                res.innerHTML = "❌ Erro ao processar. Verifique a internet.";
+                const textoFinal = data.candidates[0].content.parts[0].text;
+                resDiv.innerHTML = "🛡️ <b>RESULTADO:</b><br><br>" + textoFinal.replace(/\n/g, "<br>");
+            } catch (err) {
+                resDiv.innerHTML = "❌ Erro ao conectar. Verifique sua chave ou internet.";
             }
         }
 
-        function carregarGrafico() {
+        function desenharGrafico() {
             const ctx = document.getElementById('meuGrafico').getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
+            if(window.grafico) window.grafico.destroy();
+            window.grafico = new Chart(ctx, {
+                type: 'bar',
                 data: {
-                    labels: ['Pix', 'Links', 'Outros'],
-                    datasets: [{ data: [60, 25, 15], backgroundColor: ['#00ff00', '#6a0dad', '#444'] }]
-                }
+                    labels: ['Pix', 'Links', 'Boletos', 'CNPJ'],
+                    datasets: [{ label: 'Proteções', data: [95, 60, 45, 80], backgroundColor: '#8a2be2' }]
+                },
+                options: { scales: { y: { beginAtZero: true } } }
             });
         }
     </script>
 </body>
 </html>
+
 
 
 
