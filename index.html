@@ -3,189 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShieldBR v3 | Defesa Digital</title>
+    <title>ShieldBR PRO | Central de Inteligência</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
-        :root { --neon: #00ff41; --dark: #0a0a0a; --card: #151515; --red: #ff3131; --blue: #007bff; --gold: #ffd700; }
-        body { background: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 80px; }
-
-        /* HEADER E CONTADOR */
-        .header { background: linear-gradient(180deg, #000 0%, #1a1a1a 100%); padding: 20px; text-align: center; border-bottom: 1px solid #333; }
-        .economy-counter { color: var(--neon); font-size: 0.8rem; font-weight: bold; letter-spacing: 1px; margin-top: 5px; }
+        :root { --neon: #00ff41; --dark: #0a0a0a; --purple: #8a2be2; --card: #151515; --blue: #00d4ff; }
+        body { background: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 100px; }
         
-        /* BOTÃO SOS PULSANTE */
-        .sos-btn { background: var(--red); color: white; padding: 10px 20px; border-radius: 50px; font-weight: bold; border: none; margin: 15px auto; display: flex; align-items: center; gap: 10px; animation: pulseRed 1.5s infinite; cursor: pointer; }
-        @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(255, 49, 49, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 49, 49, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 49, 49, 0); } }
+        .header { background: #000; padding: 25px; text-align: center; border-bottom: 2px solid var(--purple); box-shadow: 0 4px 20px rgba(138, 43, 226, 0.3); }
+        .container { padding: 15px; max-width: 500px; margin: auto; }
+        
+        .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #222; }
+        .card-title { color: var(--purple); font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; font-size: 0.9rem; }
 
-        /* NAVEGAÇÃO POR ABAS (TAB BAR) */
-        .tab-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #333; z-index: 1000; }
-        .tab-item { color: #888; text-align: center; font-size: 0.65rem; text-decoration: none; cursor: pointer; transition: 0.3s; }
-        .tab-item i { font-size: 1.2rem; display: block; margin-bottom: 3px; }
-        .tab-item.active { color: var(--neon); }
+        input, textarea { width: 100%; background: #000; border: 1px solid #333; color: var(--neon); padding: 15px; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; font-size: 1rem; outline: none; }
+        input:focus { border-color: var(--purple); }
 
-        /* CONTEÚDO DAS ABAS */
-        .tab-content { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* GRADE DE BOTÕES */
+        .grid-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .btn-tool { background: #1a1a1a; border: 1px solid #333; color: #ccc; padding: 15px; border-radius: 12px; font-size: 0.75rem; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .btn-tool i { font-size: 1.2rem; color: var(--blue); }
+        .btn-tool:hover { border-color: var(--neon); color: var(--neon); background: #000; }
+        .btn-tool.active { border-color: var(--purple); color: white; background: #222; box-shadow: 0 0 10px rgba(138, 43, 226, 0.4); }
 
-        .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #222; }
-        .card-title { font-weight: bold; font-size: 0.9rem; margin-bottom: 12px; color: var(--neon); display: flex; align-items: center; gap: 8px; }
+        .btn-execute { width: 100%; padding: 20px; border-radius: 15px; border: none; background: linear-gradient(90deg, #4b0082, #8a2be2); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        
+        #res { display: none; margin-top: 20px; padding: 20px; border-radius: 15px; border: 1px solid var(--neon); background: #000; color: #fff; font-size: 0.9rem; line-height: 1.6; }
+        
+        #preview-img { width: 100%; border-radius: 12px; display: none; margin-bottom: 15px; border: 1px solid #333; }
 
-        input, select, textarea { width: 100%; background: #000; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 15px; border-radius: 8px; border: none; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-main { background: #6a0dad; }
-        .btn-check { background: var(--blue); }
-
-        #res { display: none; background: #000; border: 1px solid var(--neon); padding: 15px; border-radius: 8px; color: var(--neon); font-size: 0.85rem; margin-top: 15px; white-space: pre-wrap; }
-
-        /* LOADER */
-        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 100; }
+        .nav-item { color: #555; text-align: center; font-size: 0.7rem; cursor: pointer; }
+        .nav-item.active { color: var(--neon); }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <i class="fas fa-shield-halved fa-3x" style="color: var(--neon); animation: spin 2s linear infinite;"></i>
-        <p style="color: var(--neon); margin-top: 15px; font-weight: bold;">SHIELDBR ANALISANDO...</p>
-    </div>
-
     <div class="header">
-        <h2 style="margin:0; font-size: 1.2rem; letter-spacing: 2px;">SHIELDBR <span style="color: var(--neon);">v3</span></h2>
-        <div class="economy-counter"><i class="fas fa-chart-line"></i> R$ 2.847.000 PROTEGIDOS</div>
-        <button class="sos-btn" onclick="openSOS()"><i class="fas fa-triangle-exclamation"></i> BOTÃO SOS: ME AJUDA!</button>
+        <div style="color: var(--neon); font-size: 0.7rem; font-weight: bold; letter-spacing: 2px;">● SISTEMA OPERACIONAL ATIVO</div>
+        <h1 style="margin:5px 0 0; font-size: 1.8rem;">ShieldBR <span style="color: var(--purple);">PRO</span></h1>
     </div>
 
     <div class="container">
-        
-        <div id="aba-analisar" class="tab-content active">
-            <div class="card">
-                <div class="card-title"><i class="fas fa-magnifying-glass"></i> ANÁLISE RÁPIDA</div>
-                <input type="text" id="inputGeral" placeholder="Cole Link, Pix, Boleto ou Telefone...">
-                <button class="btn btn-check" onclick="investigarTexto()">VERIFICAR AGORA</button>
+        <div class="card">
+            <div class="card-title"><i class="fas fa-shield-virus"></i> Painel de Investigação</div>
+            
+            <img id="preview-img" src="">
+            
+            <input type="text" id="mainInput" placeholder="Selecione uma ferramenta abaixo...">
+            <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFile(event)">
+
+            <div class="grid-tools">
+                <button class="btn-tool" onclick="setMode('print')"><i class="fas fa-camera"></i> Analisar Print</button>
+                <button class="btn-tool" onclick="setMode('pix')"><i class="fas fa-money-bill-wave"></i> Pix / CPF / CNPJ</button>
+                <button class="btn-tool" onclick="setMode('boleto')"><i class="fas fa-barcode"></i> Analisar Boleto</button>
+                <button class="btn-tool" onclick="setMode('link')"><i class="fas fa-link"></i> Verificar Link</button>
+                <button class="btn-tool" onclick="setMode('ddd')"><i class="fas fa-map-marker-alt"></i> Rastrear DDD</button>
+                <button class="btn-tool" onclick="setMode('conversa')"><i class="fas fa-comments"></i> Ler Conversa</button>
             </div>
-            <div class="card">
-                <div class="card-title"><i class="fas fa-camera"></i> ANÁLISE DE PRINT/CONVERSA</div>
-                <input type="file" id="fileImg" accept="image/*" style="display:none;" onchange="handleImg(event)">
-                <button class="btn btn-main" onclick="document.getElementById('fileImg').click()"><i class="fas fa-upload"></i> CARREGAR PRINT OU FOTO</button>
-                <textarea id="txtConversa" placeholder="Ou cole aqui a conversa do WhatsApp..." style="margin-top:10px; height: 80px;"></textarea>
-                <button class="btn btn-main" style="background:#b30000" onclick="investigarConversa()">INVESTIGAR DIÁLOGO</button>
-            </div>
+            
+            <button class="btn-execute" onclick="runAI()">INICIAR VARREDURA PRO</button>
+            
             <div id="res"></div>
         </div>
-
-        <div id="aba-historico" class="tab-content">
-            <div class="card">
-                <div class="card-title"><i class="fas fa-clock-rotate-left"></i> RECENTES</div>
-                <p style="color: #666; font-size: 0.8rem;">Você ainda não realizou consultas nesta sessão.</p>
-            </div>
-        </div>
-
-        <div id="aba-radar" class="tab-content">
-            <div class="card">
-                <div class="card-title"><i class="fas fa-tower-broadcast"></i> RADAR POR ESTADO</div>
-                <select>
-                    <option>Selecione seu Estado...</option>
-                    <option>Mato Grosso (Alta incidência: Pix)</option>
-                    <option>São Paulo (Alta incidência: Central Falsa)</option>
-                </select>
-                <div style="background: #222; height: 100px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #444;">Mapa de Calor Carregando...</div>
-            </div>
-        </div>
-
-        <div id="aba-dicionario" class="tab-content">
-            <div class="card">
-                <div class="card-title"><i class="fas fa-book"></i> DICIONÁRIO DE GOLPES</div>
-                <input type="text" placeholder="Buscar golpe (Ex: Pix, Tinder...)">
-                <div style="font-size: 0.8rem;">
-                    <details style="margin-bottom:10px;"><summary>Golpe do Pix Agendado</summary><p>O golpista agenda um Pix e envia o comprovante, mas cancela logo em seguida.</p></details>
-                    <details><summary>Golpe da Falsa Central</summary><p>Ligação fingindo ser do banco pedindo para confirmar transação.</p></details>
-                </div>
-            </div>
-        </div>
-
-        <div id="aba-simulador" class="tab-content">
-            <div class="card">
-                <div class="card-title"><i class="fas fa-gamepad"></i> QUIZ DA SEGURANÇA</div>
-                <p>Teste seus conhecimentos e ganhe o Certificado ShieldBR.</p>
-                <button class="btn btn-check">COMEÇAR QUIZ</button>
-            </div>
-        </div>
-
-        <div id="aba-mais" class="tab-content">
-            <div class="card" style="border-left: 5px solid var(--gold);">
-                <div class="card-title" style="color:var(--gold)"><i class="fas fa-crown"></i> SHIELDBR PREMIUM</div>
-                <p style="font-size: 0.8rem;">Recuperação de valores e consultoria VIP com Daniel.</p>
-                <button class="btn" style="background:var(--gold); color:black;">QUERO SER PREMIUM</button>
-            </div>
-        </div>
-
     </div>
 
-    <div class="tab-bar">
-        <div class="tab-item active" onclick="switchTab('aba-analisar', this)"><i class="fas fa-search"></i>Analisar</div>
-        <div class="tab-item" onclick="switchTab('aba-historico', this)"><i class="fas fa-list"></i>Histórico</div>
-        <div class="tab-item" onclick="switchTab('aba-radar', this)"><i class="fas fa-bullseye"></i>Radar</div>
-        <div class="tab-item" onclick="switchTab('aba-dicionario', this)"><i class="fas fa-book"></i>Dicionário</div>
-        <div class="tab-item" onclick="switchTab('aba-simulador', this)"><i class="fas fa-gamepad"></i>Simulador</div>
-        <div class="tab-item" onclick="switchTab('aba-mais', this)"><i class="fas fa-ellipsis"></i>Mais</div>
+    <div class="nav-bar">
+        <div class="nav-item active"><i class="fas fa-microchip"></i><br>IA</div>
+        <div class="nav-item"><i class="fas fa-broadcast-tower"></i><br>Radar</div>
+        <div class="nav-item"><i class="fas fa-tools"></i><br>Tools</div>
+        <div class="nav-item"><i class="fas fa-graduation-cap"></i><br>Guia</div>
+        <div class="nav-item"><i class="fas fa-star"></i><br>Pro</div>
     </div>
 
     <script>
-        const KEY = "AIzaSyALrqcdO4JYfwdXl3eO-YQQJcwpqOxzHxc";
+        const API_KEY = "AIzaSyALrqcdO4JYfwdXl3eO-YQQJcwpqOxzHxc";
+        let mode = "geral";
 
-        function switchTab(tabId, el) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-item').forEach(i => i.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            el.classList.add('active');
+        function setMode(m) {
+            mode = m;
+            document.querySelectorAll('.btn-tool').forEach(b => b.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            const input = document.getElementById('mainInput');
+            input.style.display = "block";
+            document.getElementById('preview-img').style.display = "none";
+
+            if(m === 'print') {
+                document.getElementById('fileInput').click();
+                input.placeholder = "Aguardando imagem do print...";
+            } else if(m === 'ddd') input.placeholder = "Digite o número com DDD...";
+            else if(m === 'pix') input.placeholder = "Chave Pix, CPF ou CNPJ...";
+            else if(m === 'boleto') input.placeholder = "Cole a linha digitável do boleto...";
+            else if(m === 'link') input.placeholder = "Cole o link suspeito aqui...";
+            else if(m === 'conversa') input.placeholder = "Cole trechos da conversa suspeita...";
         }
 
-        function openSOS() {
-            alert("🚨 PROTOCOLO SOS ATIVADO! \n\n1. Não faça nenhum pagamento.\n2. Não passe códigos de SMS.\n3. O Daniel vai te dar as orientações no Zap.");
-            window.location.href = "https://wa.me/556692388467?text=ESTOU+SENDO+ENGANADO+AGORA+ME+AJUDA";
-        }
-
-        async function investigarTexto() {
-            const val = document.getElementById('inputGeral').value;
-            if(!val) return alert("Insira um dado!");
-            chamarIA(`Analise se este dado (Pix, Link ou Telefone) é suspeito de golpe: ${val}. Identifique a origem do DDD se houver.`);
-        }
-
-        async function investigarConversa() {
-            const txt = document.getElementById('txtConversa').value;
-            if(!txt) return alert("Cole a conversa!");
-            chamarIA(`Analise este diálogo do WhatsApp e identifique se há táticas de engenharia social ou tentativa de golpe: ${txt}`);
-        }
-
-        async function handleImg(e) {
+        function handleFile(e) {
             const reader = new FileReader();
-            reader.onload = async () => {
-                document.getElementById('loader').style.display = 'flex';
-                const rec = await Tesseract.recognize(reader.result, 'por');
-                chamarIA(`Analise o texto deste print e me diga se é golpe: ${rec.data.text}`);
+            reader.onload = () => {
+                const img = document.getElementById('preview-img');
+                img.src = reader.result;
+                img.style.display = "block";
+                document.getElementById('mainInput').style.display = "none";
             };
             reader.readAsDataURL(e.target.files[0]);
         }
 
-        async function chamarIA(p) {
-            document.getElementById('loader').style.display = 'flex';
-            const resBox = document.getElementById('res');
+        async function runAI() {
+            const out = document.getElementById('res');
+            const inputVal = document.getElementById('mainInput').value;
+            const imgData = document.getElementById('preview-img').src;
+
+            out.style.display = "block";
+            out.innerHTML = "⏳ <b>ACESSANDO PROTOCOLOS DE SEGURANÇA...</b>";
+
+            let prompt = "";
+            
+            if(mode === 'print') {
+                out.innerHTML = "🔍 <b>LENDO TEXTO DA IMAGEM...</b>";
+                const rec = await Tesseract.recognize(imgData, 'por');
+                prompt = `Analise este print e identifique se há sinais de montagem, golpe de comprovante falso ou engenharia social: ${rec.data.text}`;
+            } else if(mode === 'ddd') {
+                prompt = `Identifique a localização exata do DDD deste número: ${inputVal}. Verifique se essa região tem histórico de golpes de falsa central ou clonagem de WhatsApp.`;
+            } else if(mode === 'pix') {
+                prompt = `Analise esta chave (CPF, CNPJ ou Pix): ${inputVal}. Diga o banco de origem se possível e se há padrão de 'conta laranja' ou fraude.`;
+            } else if(mode === 'boleto') {
+                prompt = `Verifique se este código de boleto é legítimo ou se foi alterado por vírus de linha digitável: ${inputVal}.`;
+            } else {
+                prompt = `Varredura de segurança para: ${inputVal}. Analise riscos de golpe.`;
+            }
+
             try {
-                const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${KEY}`, {
-                    method: "POST", headers: {"Content-Type":"application/json"},
-                    body: JSON.stringify({contents:[{parts:[{text: p}]}]})
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
                 });
-                const d = await r.json();
-                resBox.style.display = "block";
-                resBox.innerHTML = "🛡️ <b>LAUDO SHIELDBR:</b>\n\n" + d.candidates[0].content.parts[0].text;
-                window.scrollTo(0, resBox.offsetTop);
-            } catch(e) { alert("Erro na análise."); }
-            document.getElementById('loader').style.display = 'none';
+                const data = await response.json();
+                out.innerHTML = "🛡️ <b>LAUDO TÉCNICO SHIELDBR:</b><br><br>" + data.candidates[0].content.parts[0].text.replace(/\n/g, "<br>");
+            } catch (e) {
+                out.innerHTML = "❌ Erro na conexão. Verifique sua internet ou chave API.";
+            }
         }
     </script>
 </body>
 </html>
+
 
 
 
