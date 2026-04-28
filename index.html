@@ -1,154 +1,1464 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShieldBR PRO | Central de Inteligência</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
-    <style>
-        :root { --neon: #00ff41; --dark: #0a0a0a; --purple: #8a2be2; --card: #151515; --blue: #00d4ff; }
-        body { background: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 100px; }
-        
-        .header { background: #000; padding: 25px; text-align: center; border-bottom: 2px solid var(--purple); box-shadow: 0 4px 20px rgba(138, 43, 226, 0.3); }
-        .container { padding: 15px; max-width: 500px; margin: auto; }
-        
-        .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #222; }
-        .card-title { color: var(--purple); font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; font-size: 0.9rem; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ShieldBR">
+<meta name="description" content="ShieldBR — Escudo Digital do Brasil. Analise links, boletos, telefones e Pix suspeitos com IA.">
+<link rel="manifest" href="data:application/json,{%22name%22:%22ShieldBR%22,%22short_name%22:%22ShieldBR%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230a0a1a%22,%22theme_color%22:%22%23e63946%22}">
+<title>ShieldBR — Escudo Digital do Brasil</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap');
+:root{
+  --red:#e63946;--rd:#c1121f;--rg:rgba(230,57,70,.2);
+  --grn:#2dc653;--gd:#1a8a35;--gg:rgba(45,198,83,.2);
+  --ora:#ff6b2b;--blu:#0096c7;--yel:#ffd60a;--pur:#7209b7;
+  --bg:#f4f6fb;--card:#fff;--c2:#f8faff;--bdr:#e8ecf4;
+  --tx:#0a0a1a;--mt:#6b7280;--ibg:#fff;--ibdr:#d1d8e8;
+  --sh:0 2px 8px rgba(10,10,26,.08);--shm:0 8px 32px rgba(10,10,26,.12);
+  --nav:#fff;
+}
+[data-theme="dark"]{
+  --bg:#07070f;--card:#0f0f1e;--c2:#141428;--bdr:#1e1e38;
+  --tx:#f0f0ff;--mt:#8888aa;--ibg:#0f0f1e;--ibdr:#1e1e38;
+  --sh:0 2px 8px rgba(0,0,0,.4);--shm:0 8px 32px rgba(0,0,0,.5);
+  --nav:#0f0f1e;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);max-width:480px;margin:0 auto;min-height:100vh;transition:background .3s,color .3s;overflow-x:hidden;}
 
-        input, textarea { width: 100%; background: #000; border: 1px solid #333; color: var(--neon); padding: 15px; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; font-size: 1rem; outline: none; }
-        input:focus { border-color: var(--purple); }
+/* SPLASH SCREEN */
+#splash{position:fixed;inset:0;z-index:99999;background:#07070f;display:flex;flex-direction:column;align-items:center;justify-content:center;max-width:480px;margin:0 auto;}
+#splash.out{animation:splashOut .8s ease forwards;}
+@keyframes splashOut{0%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(1.05);pointer-events:none;}}
+.splash-shield{font-size:80px;animation:shieldPulse 1.5s ease infinite;margin-bottom:16px;}
+@keyframes shieldPulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 20px rgba(230,57,70,.5));}50%{transform:scale(1.08);filter:drop-shadow(0 0 40px rgba(230,57,70,.8));}}
+.splash-logo{font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:5px;background:linear-gradient(135deg,#fff,#e63946);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+.splash-sub{color:#555;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:40px;}
+.splash-bar-bg{width:200px;height:4px;background:#1a1a2e;border-radius:2px;overflow:hidden;}
+.splash-bar-f{height:100%;background:linear-gradient(90deg,var(--red),var(--ora));border-radius:2px;animation:splashLoad 2s ease forwards;}
+@keyframes splashLoad{0%{width:0%;}100%{width:100%;}}
+.splash-txt{color:#444;font-size:11px;margin-top:10px;animation:fadeIn .5s ease 1.5s both;}
 
-        /* GRADE DE BOTÕES */
-        .grid-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
-        .btn-tool { background: #1a1a1a; border: 1px solid #333; color: #ccc; padding: 15px; border-radius: 12px; font-size: 0.75rem; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        .btn-tool i { font-size: 1.2rem; color: var(--blue); }
-        .btn-tool:hover { border-color: var(--neon); color: var(--neon); background: #000; }
-        .btn-tool.active { border-color: var(--purple); color: white; background: #222; box-shadow: 0 0 10px rgba(138, 43, 226, 0.4); }
+/* CONFETI */
+.confeti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;overflow:hidden;}
+.confeti-piece{position:absolute;width:8px;height:8px;border-radius:2px;animation:confetiFall linear forwards;}
+@keyframes confetiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
 
-        .btn-execute { width: 100%; padding: 20px; border-radius: 15px; border: none; background: linear-gradient(90deg, #4b0082, #8a2be2); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
-        
-        #res { display: none; margin-top: 20px; padding: 20px; border-radius: 15px; border: 1px solid var(--neon); background: #000; color: #fff; font-size: 0.9rem; line-height: 1.6; }
-        
-        #preview-img { width: 100%; border-radius: 12px; display: none; margin-bottom: 15px; border: 1px solid #333; }
+/* ONBOARDING */
+#ob{position:fixed;inset:0;z-index:9998;background:#07070f;display:none;flex-direction:column;align-items:center;justify-content:center;padding:28px;max-width:480px;margin:0 auto;}
+#ob.show{display:flex;}
+#ob.out{animation:fadeOut .5s forwards;}
+@keyframes fadeOut{to{opacity:0;pointer-events:none;}}
+.ob-logo{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:4px;background:linear-gradient(135deg,#e63946,#ff6b2b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.ob-sub{color:#555;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:32px;}
+.ob-sl{display:none;text-align:center;animation:fadeIn .4s ease;width:100%;}
+.ob-sl.on{display:block;}
+.ob-icon{font-size:64px;display:block;margin-bottom:14px;}
+.ob-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:8px;}
+.ob-desc{font-size:13px;color:#777;line-height:1.7;margin-bottom:28px;}
+.ob-dots{display:flex;gap:7px;justify-content:center;margin-bottom:22px;}
+.ob-dot{width:8px;height:8px;border-radius:50%;background:#333;transition:all .3s;}
+.ob-dot.on{background:var(--red);width:22px;border-radius:4px;}
+.ob-btn{width:100%;padding:15px;background:linear-gradient(135deg,#e63946,#c1121f);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 8px 28px rgba(230,57,70,.4);}
+.ob-skip{color:#444;font-size:12px;background:none;border:none;cursor:pointer;margin-top:14px;font-family:'Inter',sans-serif;}
 
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 100; }
-        .nav-item { color: #555; text-align: center; font-size: 0.7rem; cursor: pointer; }
-        .nav-item.active { color: var(--neon); }
-    </style>
+/* PWA INSTALL BANNER */
+#pwaBar{background:linear-gradient(135deg,#0a0a1a,#1a0a24);padding:10px 14px;display:none;align-items:center;gap:10px;border-bottom:1px solid rgba(230,57,70,.2);}
+#pwaBar.show{display:flex;}
+.pwa-icon{font-size:24px;}
+.pwa-info{flex:1;}
+.pwa-title{font-size:12px;font-weight:800;color:#fff;}
+.pwa-sub{font-size:10px;color:#888;}
+.pwa-btn{background:var(--red);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;}
+.pwa-close{background:none;border:none;color:#555;font-size:16px;cursor:pointer;padding:4px;}
+
+/* NOTIF BANNER */
+#notifBanner{background:linear-gradient(135deg,#c1121f,#e63946);padding:10px 14px;display:none;align-items:center;gap:10px;animation:slideDown .4s ease;}
+@keyframes slideDown{from{transform:translateY(-100%);opacity:0;}to{transform:translateY(0);opacity:1;}}
+#notifBanner.show{display:flex;}
+.notif-ico{font-size:20px;}
+.notif-txt{flex:1;font-size:12px;font-weight:700;color:#fff;line-height:1.4;}
+.notif-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:16px;cursor:pointer;}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:var(--nav);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:11px 16px;box-shadow:var(--sh);backdrop-filter:blur(20px);}
+.nav-brand{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;background:linear-gradient(135deg,#e63946,#ff6b2b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-acts{display:flex;gap:6px;align-items:center;}
+.nav-btn{background:none;border:none;cursor:pointer;font-size:17px;padding:6px;border-radius:9px;transition:background .2s;}
+.nav-btn:hover{background:var(--bdr);}
+.nav-user{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--ora));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;cursor:pointer;border:none;font-family:'Bebas Neue',sans-serif;}
+
+/* TABS */
+.tabs{display:flex;background:var(--nav);border-bottom:1px solid var(--bdr);position:sticky;top:53px;z-index:99;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex:0 0 auto;padding:9px 9px;text-align:center;font-size:8px;font-weight:700;color:var(--mt);cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;transition:all .2s;font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;}
+.tab.on{color:var(--red);border-bottom-color:var(--red);}
+.tab i{display:block;font-size:16px;margin-bottom:2px;font-style:normal;}
+.pg{display:none;padding-bottom:40px;animation:pgIn .3s ease;}
+@keyframes pgIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.pg.on{display:block;}
+
+/* HERO */
+.hero{background:linear-gradient(160deg,#0a0a1a,#1a0a24 50%,#0a1a0a);padding:24px 20px 46px;position:relative;overflow:hidden;}
+.hero-part{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.pt{position:absolute;width:2px;height:2px;background:var(--red);border-radius:50%;animation:rise linear infinite;}
+@keyframes rise{0%{transform:translateY(110%);opacity:0;}10%{opacity:.5;}90%{opacity:.3;}100%{transform:translateY(-110%);opacity:0;}}
+.hero-c{position:relative;z-index:1;text-align:center;}
+.hero-badge{display:inline-block;background:rgba(230,57,70,.12);border:1px solid rgba(230,57,70,.25);color:var(--red);font-size:10px;font-weight:700;padding:3px 11px;border-radius:20px;margin-bottom:10px;letter-spacing:.8px;}
+.hero-logo{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:4px;background:linear-gradient(135deg,#fff,#e63946);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;}
+.hero-tag{font-size:11px;color:#666;margin-top:3px;letter-spacing:.8px;}
+.hero-stats{display:flex;justify-content:center;gap:18px;margin-top:16px;}
+.hs .n{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--red);display:block;}
+.hs .l{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.4px;}
+
+/* ECONOMIA */
+.economia{background:linear-gradient(135deg,#0a2a0f,#0a0a1a);border-radius:14px;padding:13px 16px;margin:14px;border:1px solid rgba(45,198,83,.2);display:flex;align-items:center;gap:12px;}
+.eco-ico{font-size:30px;}
+.eco-val{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--grn);}
+.eco-lbl{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.6px;}
+
+/* ALERTA */
+.ad{margin:14px;border-radius:14px;overflow:hidden;box-shadow:var(--shm);border:1px solid var(--bdr);}
+.ad-h{background:linear-gradient(135deg,var(--ora),var(--rd));color:#fff;padding:9px 15px;font-weight:700;font-size:11px;display:flex;align-items:center;gap:7px;text-transform:uppercase;letter-spacing:.4px;}
+.ad-b{background:var(--card);padding:13px 15px;}
+.ad-t{font-size:14px;font-weight:800;margin-bottom:4px;}
+.ad-d{font-size:12px;color:var(--mt);line-height:1.6;}
+.ad-tip{margin-top:7px;font-size:12px;font-weight:700;color:var(--grn);}
+
+/* SEÇÃO */
+.sec{margin:14px;}
+.sec-t{font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.8px;margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+.sec-t::after{content:'';flex:1;height:1px;background:var(--bdr);}
+
+/* TOOL CARD */
+.tc{background:var(--card);border:1px solid var(--bdr);border-radius:18px;padding:18px;margin-bottom:12px;box-shadow:var(--sh);transition:box-shadow .2s,transform .2s;}
+.tc:hover{box-shadow:var(--shm);}
+.tc-h{display:flex;align-items:center;gap:11px;margin-bottom:14px;}
+.tc-ico{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.i-r{background:rgba(230,57,70,.1);}.i-b{background:rgba(0,150,199,.1);}.i-o{background:rgba(255,107,43,.1);}
+.i-t{background:rgba(0,150,136,.1);}.i-p{background:rgba(114,9,183,.1);}.i-y{background:rgba(255,214,10,.1);}
+.i-g{background:rgba(45,198,83,.1);}.i-d{background:rgba(255,255,255,.06);}
+.tc-info h3{font-size:14px;font-weight:800;margin-bottom:1px;}
+.tc-info p{font-size:11px;color:var(--mt);}
+.ai-tag{display:inline-block;font-size:8px;font-weight:800;padding:1px 6px;border-radius:20px;background:linear-gradient(135deg,#6a11cb,#2575fc);color:#fff;margin-left:5px;letter-spacing:.4px;vertical-align:middle;}
+.offline-tag{display:inline-block;font-size:8px;font-weight:800;padding:1px 6px;border-radius:20px;background:linear-gradient(135deg,#1a8a35,#2dc653);color:#fff;margin-left:5px;letter-spacing:.4px;vertical-align:middle;}
+
+/* INPUTS */
+.iw{position:relative;margin-bottom:9px;}
+.iw input,.iw textarea,.iw select{width:100%;padding:12px 15px;border-radius:11px;border:1.5px solid var(--ibdr);font-size:13px;font-family:'Inter',sans-serif;background:var(--ibg);color:var(--tx);outline:none;transition:border .2s,box-shadow .2s;}
+.iw input:focus,.iw textarea:focus,.iw select:focus{border-color:var(--red);box-shadow:0 0 0 3px var(--rg);}
+.iw textarea{resize:none;height:70px;}
+
+/* BOTÕES */
+.btn{width:100%;padding:13px;border:none;border-radius:11px;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;}
+.btn:active{transform:scale(.97);}
+.btn:disabled{opacity:.6;cursor:not-allowed;}
+.bp{background:linear-gradient(135deg,var(--red),var(--rd));color:#fff;box-shadow:0 4px 14px var(--rg);}
+.bb{background:linear-gradient(135deg,#0096c7,#0077a8);color:#fff;}
+.bo{background:linear-gradient(135deg,#ff6b2b,#e65100);color:#fff;}
+.bt{background:linear-gradient(135deg,#009688,#00796b);color:#fff;}
+.bpu{background:linear-gradient(135deg,#7209b7,#560bad);color:#fff;}
+.bg{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;}
+.bdk{background:linear-gradient(135deg,#1a1a2e,#0f0f20);color:#fff;}
+.byd{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;}
+.bgh{background:var(--c2);color:var(--tx);border:1.5px solid var(--bdr);}
+.bvt{background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;}
+[data-theme="dark"] .bdk{background:linear-gradient(135deg,#222,#111);}
+.spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0;}
+@keyframes sp{to{transform:rotate(360deg);}}
+
+/* SCORE CARD */
+.scc{border-radius:15px;overflow:hidden;margin-top:12px;display:none;animation:up .4s ease;}
+@keyframes up{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.scc-h{padding:14px 16px;display:flex;align-items:center;gap:12px;}
+.scc-ring{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;flex-shrink:0;position:relative;}
+.scc-ring svg{position:absolute;top:0;left:0;transform:rotate(-90deg);}
+.scc-num{font-family:'Bebas Neue',sans-serif;font-size:20px;line-height:1;position:relative;z-index:1;}
+.scc-lbl{font-size:7px;font-weight:700;text-transform:uppercase;position:relative;z-index:1;}
+.scc-ti h3{font-size:15px;font-weight:800;margin-bottom:2px;}
+.scc-ti p{font-size:11px;opacity:.8;}
+.scc-body{padding:0 16px 14px;}
+.scc-rows{background:rgba(0,0,0,.04);border-radius:11px;overflow:hidden;margin-bottom:10px;}
+[data-theme="dark"] .scc-rows{background:rgba(255,255,255,.04);}
+.scc-row{display:flex;justify-content:space-between;align-items:center;padding:8px 13px;border-bottom:1px solid rgba(0,0,0,.04);gap:8px;font-size:11px;}
+[data-theme="dark"] .scc-row{border-bottom-color:rgba(255,255,255,.04);}
+.scc-row:last-child{border-bottom:none;}
+.sr-l{color:var(--mt);flex-shrink:0;font-weight:500;}
+.sr-v{font-weight:700;text-align:right;}
+.scc-tip{padding:10px 13px;border-radius:11px;font-size:12px;font-weight:600;line-height:1.5;}
+.scc-share{margin-top:8px;padding:9px;border-radius:9px;border:1.5px solid var(--bdr);background:none;color:var(--mt);font-size:11px;font-weight:700;cursor:pointer;width:100%;font-family:'Inter',sans-serif;transition:all .2s;}
+.scc-share:hover{background:var(--bdr);}
+.s-d .scc-h{background:linear-gradient(135deg,#c1121f,#e63946);}
+.s-d .scc-ti *,.s-d .scc-num,.s-d .scc-lbl{color:#fff;}
+.s-d .scc-tip{background:#ffebee;color:#c1121f;}
+[data-theme="dark"] .s-d .scc-tip{background:#2a0808;color:#ff8a80;}
+.s-w .scc-h{background:linear-gradient(135deg,#e65100,#ff6b2b);}
+.s-w .scc-ti *,.s-w .scc-num,.s-w .scc-lbl{color:#fff;}
+.s-w .scc-tip{background:#fff3e0;color:#bf360c;}
+[data-theme="dark"] .s-w .scc-tip{background:#2a1400;color:#ffb74d;}
+.s-o .scc-h{background:linear-gradient(135deg,#1a8a35,#2dc653);}
+.s-o .scc-ti *,.s-o .scc-num,.s-o .scc-lbl{color:#fff;}
+.s-o .scc-tip{background:#e8f5e9;color:#1a8a35;}
+[data-theme="dark"] .s-o .scc-tip{background:#0a2a0f;color:#69f0ae;}
+.bd{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:7px;}
+.br{background:#ffebee;color:#c62828;}.bg2{background:#e8f5e9;color:#1b5e20;}.bo2{background:#fff3e0;color:#bf360c;}
+.bgr{background:var(--c2);color:var(--mt);border:1px solid var(--bdr);}.bbl{background:#e3f2fd;color:#1565c0;}
+[data-theme="dark"] .br{background:#2a0808;color:#ff8a80;}[data-theme="dark"] .bg2{background:#0a2a0f;color:#69f0ae;}
+[data-theme="dark"] .bo2{background:#2a1400;color:#ffb74d;}[data-theme="dark"] .bbl{background:#0a1a2a;color:#64b5f6;}
+
+/* ANÁLISE RÁPIDA */
+.qk{background:linear-gradient(135deg,#0a0a1a,#1a0a24);border-radius:18px;padding:18px;margin-bottom:12px;border:1px solid rgba(230,57,70,.2);}
+.qk-t{font-size:11px;font-weight:700;color:#777;text-transform:uppercase;letter-spacing:.8px;margin-bottom:9px;}
+.qk-i{width:100%;padding:13px 15px;border-radius:11px;border:1.5px solid rgba(255,255,255,.08);font-size:13px;font-family:'Inter',sans-serif;background:rgba(255,255,255,.04);color:#fff;outline:none;margin-bottom:9px;}
+.qk-i::placeholder{color:#444;}
+.qk-i:focus{border-color:var(--red);}
+.qk-types{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px;}
+.qk-tp{padding:3px 9px;border-radius:7px;font-size:10px;font-weight:700;border:1px solid rgba(255,255,255,.08);color:#666;background:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;}
+.qk-tp.on{background:var(--red);color:#fff;border-color:var(--red);}
+
+/* SOS */
+.sos-btn{background:linear-gradient(135deg,#c1121f,#e63946);color:#fff;border:none;border-radius:16px;padding:16px;width:100%;font-size:15px;font-weight:900;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 8px 32px rgba(230,57,70,.5);animation:psos 2s infinite;margin-bottom:12px;}
+@keyframes psos{0%,100%{box-shadow:0 8px 32px rgba(230,57,70,.5);}50%{box-shadow:0 8px 48px rgba(230,57,70,.8),0 0 0 8px rgba(230,57,70,.1);}}
+.sos-panel{display:none;background:var(--card);border:2px solid var(--red);border-radius:16px;padding:16px;animation:up .4s ease;}
+.sos-step{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--bdr);}
+.sos-step:last-child{border-bottom:none;}
+.sos-n{width:30px;height:30px;background:var(--red);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sos-step h5{font-size:13px;font-weight:800;margin-bottom:2px;}
+.sos-step p{font-size:12px;color:var(--mt);line-height:1.5;}
+.sos-step a{color:var(--red);font-weight:700;text-decoration:none;}
+
+/* CHAT */
+.chat-wrap{background:var(--card);border:1px solid var(--bdr);border-radius:18px;overflow:hidden;box-shadow:var(--sh);margin-bottom:12px;}
+.chat-header{background:linear-gradient(135deg,#0a0a1a,#1a0a24);padding:12px 16px;display:flex;align-items:center;gap:10px;}
+.chat-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--ora));display:flex;align-items:center;justify-content:center;font-size:17px;}
+.chat-name{color:#fff;font-weight:800;font-size:14px;}
+.chat-status{color:#aaa;font-size:11px;display:flex;align-items:center;gap:4px;}
+.chat-dot{width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block;animation:blink 1.5s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{padding:14px;min-height:200px;max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
+.chat-msg{max-width:82%;padding:10px 13px;border-radius:12px;font-size:13px;line-height:1.5;animation:fadeIn .3s ease;}
+.chat-msg.ai{background:var(--c2);align-self:flex-start;border-radius:0 12px 12px 12px;border:1px solid var(--bdr);}
+.chat-msg.user{background:linear-gradient(135deg,var(--red),var(--rd));color:#fff;align-self:flex-end;border-radius:12px 0 12px 12px;}
+.chat-typing{display:flex;gap:4px;padding:10px 13px;background:var(--c2);border-radius:0 12px 12px 12px;border:1px solid var(--bdr);width:fit-content;align-self:flex-start;}
+.chat-typing span{width:6px;height:6px;border-radius:50%;background:var(--mt);animation:typing 1.2s infinite;}
+.chat-typing span:nth-child(2){animation-delay:.2s;}
+.chat-typing span:nth-child(3){animation-delay:.4s;}
+@keyframes typing{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.chat-input-wrap{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--bdr);}
+.chat-input{flex:1;padding:10px 13px;border-radius:11px;border:1.5px solid var(--ibdr);font-size:13px;font-family:'Inter',sans-serif;background:var(--ibg);color:var(--tx);outline:none;}
+.chat-input:focus{border-color:var(--red);}
+.chat-send{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--red),var(--rd));border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.chat-sugs{display:flex;gap:6px;padding:0 14px 12px;flex-wrap:wrap;}
+.chat-sug{padding:5px 10px;border-radius:20px;border:1px solid var(--bdr);background:var(--c2);color:var(--mt);font-size:11px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;}
+.chat-sug:hover{border-color:var(--red);color:var(--red);}
+
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.dash-card{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:14px;box-shadow:var(--sh);text-align:center;}
+.dash-card .d-num{font-family:'Bebas Neue',sans-serif;font-size:32px;display:block;margin-bottom:2px;}
+.dash-card .d-lbl{font-size:11px;color:var(--mt);font-weight:600;}
+.chart-wrap{background:var(--card);border:1px solid var(--bdr);border-radius:18px;padding:18px;margin-bottom:12px;box-shadow:var(--sh);}
+.chart-title{font-size:13px;font-weight:800;margin-bottom:14px;}
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:100px;}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.chart-bar{width:100%;border-radius:4px 4px 0 0;min-height:4px;transition:height .8s ease;}
+.chart-bar-lbl{font-size:9px;color:var(--mt);font-weight:600;}
+.chart-bar-val{font-size:9px;font-weight:700;}
+.tipo-item{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.tipo-bar-bg{flex:1;height:8px;background:var(--bdr);border-radius:4px;overflow:hidden;}
+.tipo-bar-f{height:100%;border-radius:4px;transition:width .8s ease;}
+.tipo-lbl{font-size:11px;font-weight:700;min-width:90px;}
+.tipo-pct{font-size:11px;color:var(--mt);min-width:32px;text-align:right;}
+
+/* PERFIL */
+.perfil-hero{background:linear-gradient(160deg,#0a0a1a,#1a0a24);border-radius:18px;padding:20px;margin-bottom:12px;text-align:center;border:1px solid rgba(230,57,70,.2);}
+.perfil-av{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--ora));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;margin:0 auto 10px;font-family:'Bebas Neue',sans-serif;border:3px solid rgba(255,255,255,.1);}
+.perfil-nome{font-size:18px;font-weight:800;color:#fff;margin-bottom:2px;}
+.perfil-nivel{font-size:11px;color:#aaa;margin-bottom:12px;}
+.perfil-badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.p-badge{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;color:#ddd;display:flex;align-items:center;gap:4px;}
+.xp-bar-bg{height:8px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;margin:12px 0 4px;}
+.xp-bar-f{height:100%;background:linear-gradient(90deg,var(--red),var(--ora));border-radius:4px;transition:width 1s ease;}
+.xp-info{display:flex;justify-content:space-between;font-size:10px;color:#888;}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.stat-card{background:var(--card);border:1px solid var(--bdr);border-radius:13px;padding:12px;text-align:center;box-shadow:var(--sh);}
+.stat-card .s-num{font-family:'Bebas Neue',sans-serif;font-size:26px;display:block;color:var(--red);}
+.stat-card .s-lbl{font-size:10px;color:var(--mt);font-weight:600;}
+.rank-item{background:var(--card);border:1px solid var(--bdr);border-radius:13px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:var(--sh);}
+.rank-pos{font-family:'Bebas Neue',sans-serif;font-size:22px;min-width:28px;text-align:center;}
+.rank-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;font-family:'Bebas Neue',sans-serif;flex-shrink:0;}
+.rank-info{flex:1;}
+.rank-nome{font-size:13px;font-weight:800;}
+.rank-cidade{font-size:11px;color:var(--mt);}
+.rank-pts{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--red);}
+
+/* HIST */
+.hi-card{background:var(--card);border:1px solid var(--bdr);border-radius:13px;padding:13px;margin-bottom:9px;display:flex;gap:11px;align-items:flex-start;box-shadow:var(--sh);}
+.hi-ico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;background:var(--c2);}
+.hi-info{flex:1;min-width:0;}
+.hi-tipo{font-size:9px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px;}
+.hi-val{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hi-data{font-size:10px;color:var(--mt);margin-top:2px;}
+.hi-sc{text-align:center;flex-shrink:0;}
+.hi-sc .n{font-family:'Bebas Neue',sans-serif;font-size:18px;display:block;}
+.hi-sc .l{font-size:8px;color:var(--mt);text-transform:uppercase;}
+
+/* SIMULADOR */
+.sim-wh{background:var(--card);border:1px solid var(--bdr);border-radius:18px;overflow:hidden;box-shadow:var(--sh);margin-bottom:12px;}
+.sim-header{background:#075e54;padding:12px 16px;display:flex;align-items:center;gap:10px;}
+.sim-av{width:36px;height:36px;border-radius:50%;background:#128c7e;display:flex;align-items:center;justify-content:center;font-size:17px;}
+.sim-name{color:#fff;font-weight:700;font-size:14px;}
+.sim-status{color:#a8d5af;font-size:11px;}
+.sim-msgs{padding:14px;background:#e5ddd5;min-height:180px;display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto;}
+[data-theme="dark"] .sim-msgs{background:#1a1a2e;}
+.sim-msg{max-width:82%;padding:9px 12px;border-radius:12px;font-size:12px;line-height:1.5;}
+.sim-msg.recv{background:#fff;align-self:flex-start;border-radius:0 12px 12px 12px;}
+[data-theme="dark"] .sim-msg.recv{background:#202c33;color:#f0f0ff;}
+.sim-msg.sent{background:#dcf8c6;align-self:flex-end;border-radius:12px 0 12px 12px;}
+[data-theme="dark"] .sim-msg.sent{background:#005c4b;color:#fff;}
+.sim-time{font-size:10px;color:#999;margin-top:2px;text-align:right;}
+.sim-opts{padding:14px;display:flex;flex-direction:column;gap:7px;}
+.sim-opt{padding:10px 13px;border-radius:11px;border:2px solid var(--bdr);background:var(--c2);color:var(--tx);font-weight:600;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;text-align:left;transition:all .2s;}
+.sim-opt:hover{border-color:var(--red);}
+.sim-opt.ok{border-color:var(--grn);background:rgba(45,198,83,.08);color:var(--gd);}
+.sim-opt.er{border-color:var(--red);background:rgba(230,57,70,.08);color:var(--rd);}
+.sim-fb{padding:12px 14px;font-size:12px;font-weight:700;display:none;}
+.sim-fb.ok{background:#e8f5e9;color:#1a8a35;}
+.sim-fb.er{background:#ffebee;color:#c1121f;}
+[data-theme="dark"] .sim-fb.ok{background:#0a2a0f;color:#69f0ae;}
+[data-theme="dark"] .sim-fb.er{background:#2a0808;color:#ff8a80;}
+
+/* QUIZ */
+.qz-wrap{background:var(--card);border:1px solid var(--bdr);border-radius:18px;padding:18px;box-shadow:var(--sh);margin-bottom:12px;}
+.qz-prog{height:4px;background:var(--bdr);border-radius:2px;margin-bottom:14px;overflow:hidden;}
+.qz-prog-f{height:100%;background:linear-gradient(90deg,var(--red),var(--ora));border-radius:2px;transition:width .4s ease;}
+.qz-pts{display:inline-flex;align-items:center;gap:5px;background:rgba(230,57,70,.1);color:var(--red);font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;margin-bottom:12px;}
+.qz-q{font-size:14px;font-weight:700;line-height:1.5;margin-bottom:14px;}
+.qz-opt{width:100%;padding:12px 14px;border-radius:11px;border:2px solid var(--bdr);background:var(--c2);color:var(--tx);font-weight:600;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;text-align:left;transition:all .2s;margin-bottom:7px;display:flex;align-items:center;gap:9px;}
+.qz-opt:hover{border-color:var(--red);}
+.qz-opt.ok{border-color:var(--grn);background:rgba(45,198,83,.08);color:var(--gd);}
+.qz-opt.er{border-color:var(--red);background:rgba(230,57,70,.08);color:var(--rd);}
+.qz-fb{padding:11px 13px;border-radius:11px;font-size:12px;font-weight:700;margin-top:9px;display:none;animation:fadeIn .3s ease;}
+.qz-fb.ok{background:#e8f5e9;color:#1a8a35;}
+.qz-fb.er{background:#ffebee;color:#c1121f;}
+[data-theme="dark"] .qz-fb.ok{background:#0a2a0f;color:#69f0ae;}
+[data-theme="dark"] .qz-fb.er{background:#2a0808;color:#ff8a80;}
+
+/* CERT */
+.cert{background:linear-gradient(160deg,#0a0a1a,#1a0520,#001a0a);border-radius:18px;padding:22px;text-align:center;margin-top:14px;display:none;border:1px solid rgba(230,57,70,.25);}
+.cert-seal{font-size:52px;margin-bottom:6px;}
+.cert-t{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;background:linear-gradient(135deg,gold,#ffd60a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.cert-name{font-size:18px;font-weight:800;color:#fff;margin:6px 0;}
+.cert-desc{font-size:11px;color:#444;margin-bottom:14px;}
+
+/* GOLPES */
+.gc{background:var(--card);border:1px solid var(--bdr);border-radius:15px;padding:14px;margin-bottom:11px;box-shadow:var(--sh);position:relative;overflow:hidden;}
+.gc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--red);}
+.gc-tag{display:inline-flex;align-items:center;gap:3px;background:rgba(230,57,70,.1);color:var(--red);font-size:9px;font-weight:700;padding:2px 7px;border-radius:7px;margin-bottom:7px;text-transform:uppercase;}
+.gc-title{font-size:13px;font-weight:800;margin-bottom:4px;}
+.gc-desc{font-size:12px;color:var(--mt);line-height:1.6;}
+.gc-dica{margin-top:7px;font-size:12px;font-weight:700;color:var(--grn);}
+
+/* MURAL */
+.mural-item{background:var(--card);border:1px solid rgba(255,107,43,.2);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:var(--sh);animation:fadeIn .3s ease;}
+.mural-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.mural-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;font-family:'Bebas Neue',sans-serif;flex-shrink:0;}
+.mural-nome{font-size:12px;font-weight:800;}
+.mural-data{font-size:10px;color:var(--mt);}
+.mural-tipo{display:inline-block;font-size:9px;font-weight:800;padding:2px 7px;border-radius:7px;background:rgba(255,107,43,.1);color:var(--ora);text-transform:uppercase;margin-bottom:5px;}
+.mural-desc{font-size:12px;color:var(--mt);line-height:1.5;}
+.mural-likes{display:flex;align-items:center;gap:5px;margin-top:8px;}
+.like-btn{background:none;border:1px solid var(--bdr);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--mt);cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;display:flex;align-items:center;gap:4px;}
+.like-btn:hover,.like-btn.liked{background:rgba(230,57,70,.1);color:var(--red);border-color:var(--red);}
+
+/* SENHA SEGURA */
+.senha-display{background:linear-gradient(135deg,#0a0a1a,#1a0a24);border-radius:12px;padding:14px 16px;margin-bottom:10px;font-family:'Courier New',monospace;font-size:15px;font-weight:700;color:var(--grn);letter-spacing:2px;text-align:center;word-break:break-all;min-height:50px;display:flex;align-items:center;justify-content:center;}
+.senha-opts{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.senha-opt{padding:5px 12px;border-radius:9px;border:1.5px solid var(--bdr);background:var(--c2);color:var(--tx);font-size:11px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;}
+.senha-opt.on{background:var(--grn);color:#fff;border-color:var(--grn);}
+
+/* AFILIADO */
+.afil-card{background:linear-gradient(160deg,#0a0a1a,#1a2a0a);border-radius:18px;padding:18px;border:1px solid rgba(45,198,83,.2);}
+.afil-titulo{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;background:linear-gradient(135deg,var(--grn),#ffd60a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;}
+.afil-sub{font-size:11px;color:#777;margin-bottom:14px;}
+.afil-item{display:flex;align-items:center;gap:9px;padding:9px 13px;background:rgba(255,255,255,.03);border-radius:11px;margin-bottom:7px;font-size:12px;font-weight:600;color:#ddd;border:1px solid rgba(255,255,255,.05);}
+.afil-item span{font-size:17px;}
+.afil-link{background:rgba(255,255,255,.05);border-radius:10px;padding:10px 13px;font-size:11px;color:#aaa;word-break:break-all;margin-top:10px;border:1px solid rgba(255,255,255,.08);}
+
+/* PASSO */
+.passo{display:flex;gap:13px;margin-bottom:12px;background:var(--card);border:1px solid var(--bdr);border-radius:15px;padding:14px;box-shadow:var(--sh);}
+.passo-n{width:34px;height:34px;background:linear-gradient(135deg,var(--red),var(--rd));color:#fff;font-family:'Bebas Neue',sans-serif;font-size:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.passo h5{font-size:13px;font-weight:800;margin-bottom:2px;}
+.passo p{font-size:12px;color:var(--mt);line-height:1.5;}
+
+/* PREM */
+.prem{background:linear-gradient(160deg,#0a0a1a,#1a0524);border-radius:18px;padding:18px;margin-bottom:12px;border:1px solid rgba(114,9,183,.25);}
+.prem-t{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;background:linear-gradient(135deg,#ffd60a,#ff6b2b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.prem-s{font-size:11px;color:#777;margin-bottom:14px;}
+.prem-item{display:flex;align-items:center;gap:9px;padding:9px 13px;background:rgba(255,255,255,.03);border-radius:11px;margin-bottom:7px;font-size:12px;font-weight:600;color:#ddd;border:1px solid rgba(255,255,255,.05);}
+.prem-item span{font-size:17px;}
+
+/* DEP */
+.dep{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:13px;margin-bottom:9px;box-shadow:var(--sh);}
+.dep-nome{font-weight:800;font-size:12px;margin-bottom:2px;}
+.dep-stars{color:var(--yel);font-size:12px;margin-bottom:4px;}
+.dep p{font-size:12px;color:var(--mt);line-height:1.5;}
+
+/* PROT */
+.prot-card{background:var(--c2);border:1px solid var(--bdr);border-radius:12px;padding:14px;margin-bottom:9px;}
+.prot-card h4{font-size:13px;font-weight:800;margin-bottom:6px;color:var(--red);}
+.prot-card p{font-size:12px;color:var(--mt);line-height:1.6;}
+
+/* IMG UPLOAD */
+.img-drop{border:2px dashed var(--ibdr);border-radius:14px;padding:22px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:9px;position:relative;}
+.img-drop:hover{border-color:var(--red);}
+.img-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.img-drop .d-ico{font-size:34px;display:block;margin-bottom:7px;}
+.img-drop .d-t{font-size:13px;font-weight:700;margin-bottom:3px;}
+.img-drop .d-s{font-size:11px;color:var(--mt);}
+.img-prev{width:100%;border-radius:11px;margin-bottom:9px;display:none;max-height:200px;object-fit:contain;}
+
+/* CONVERSA */
+.conv-area{width:100%;padding:12px 15px;border-radius:11px;border:1.5px solid var(--ibdr);font-size:13px;font-family:'Inter',sans-serif;background:var(--ibg);color:var(--tx);outline:none;resize:none;height:110px;transition:border .2s;}
+.conv-area:focus{border-color:var(--red);}
+.conv-line{display:flex;gap:9px;padding:9px 12px;border-radius:11px;margin-bottom:7px;font-size:12px;font-weight:600;animation:fadeIn .3s ease;}
+.conv-line.ok{background:#e8f5e9;color:#1a8a35;}
+.conv-line.er{background:#ffebee;color:#c1121f;}
+.conv-line.war{background:#fff3e0;color:#bf360c;}
+[data-theme="dark"] .conv-line.ok{background:#0a2a0f;color:#69f0ae;}
+[data-theme="dark"] .conv-line.er{background:#2a0808;color:#ff8a80;}
+[data-theme="dark"] .conv-line.war{background:#2a1400;color:#ffb74d;}
+
+/* DIC */
+.dic-search{width:100%;padding:12px 15px;border-radius:11px;border:1.5px solid var(--ibdr);font-size:13px;font-family:'Inter',sans-serif;background:var(--ibg);color:var(--tx);outline:none;margin-bottom:9px;}
+.dic-search:focus{border-color:var(--red);box-shadow:0 0 0 3px var(--rg);}
+.dic-card{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:var(--sh);}
+.dic-tag{display:inline-block;font-size:9px;font-weight:800;padding:2px 7px;border-radius:7px;background:rgba(230,57,70,.1);color:var(--red);margin-bottom:6px;text-transform:uppercase;}
+.dic-title{font-size:14px;font-weight:800;margin-bottom:5px;}
+.dic-desc{font-size:12px;color:var(--mt);line-height:1.6;margin-bottom:7px;}
+.dic-como{font-size:12px;font-weight:700;color:var(--grn);}
+
+/* RISCO */
+.risco-opt{padding:6px 12px;border-radius:9px;border:1.5px solid var(--bdr);background:var(--c2);color:var(--tx);font-size:12px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;}
+.risco-opt.on{background:var(--red);color:#fff;border-color:var(--red);}
+.r-opts{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
+.r-q{font-size:13px;font-weight:700;margin-bottom:9px;}
+
+/* BIG BTNS */
+.big{display:block;width:100%;padding:15px;border:none;border-radius:15px;font-size:14px;font-weight:800;font-family:'Inter',sans-serif;cursor:pointer;text-align:center;text-decoration:none;transition:all .2s;margin-bottom:9px;}
+.big:active{transform:scale(.98);}
+.big-zap{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;box-shadow:0 6px 24px rgba(37,211,102,.28);}
+.big-dk{background:linear-gradient(135deg,#1a1a2e,#0f0f20);color:#fff;}
+[data-theme="dark"] .big-dk{background:linear-gradient(135deg,#222,#111);}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+.empty{text-align:center;padding:28px 20px;color:var(--mt);}
+.empty span{font-size:38px;display:block;margin-bottom:7px;opacity:.25;}
+.rodape{text-align:center;padding:18px;font-size:11px;color:var(--mt);}
+</style>
 </head>
 <body>
 
-    <div class="header">
-        <div style="color: var(--neon); font-size: 0.7rem; font-weight: bold; letter-spacing: 2px;">● SISTEMA OPERACIONAL ATIVO</div>
-        <h1 style="margin:5px 0 0; font-size: 1.8rem;">ShieldBR <span style="color: var(--purple);">PRO</span></h1>
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-shield">🛡️</div>
+  <div class="splash-logo">ShieldBR</div>
+  <div class="splash-sub">Escudo Digital do Brasil</div>
+  <div class="splash-bar-bg"><div class="splash-bar-f"></div></div>
+  <div class="splash-txt">Carregando proteção...</div>
+</div>
+
+<!-- CONFETI -->
+<div class="confeti" id="confeti" style="display:none;"></div>
+
+<!-- ONBOARDING -->
+<div id="ob">
+  <div class="ob-logo">ShieldBR</div>
+  <div class="ob-sub">Escudo Digital do Brasil</div>
+  <div>
+    <div class="ob-sl on" id="obs0"><span class="ob-icon">🛡️</span><div class="ob-title">Bem-vindo ao ShieldBR</div><div class="ob-desc">O app mais completo do Brasil para identificar golpes em tempo real com IA avançada e análise offline.</div></div>
+    <div class="ob-sl" id="obs1"><span class="ob-icon">🤖</span><div class="ob-title">Chat com IA em Tempo Real</div><div class="ob-desc">Converse com nossa IA de segurança sobre qualquer golpe. Resposta imediata 24h.</div></div>
+    <div class="ob-sl" id="obs2"><span class="ob-icon">📱</span><div class="ob-title">Instale como App!</div><div class="ob-desc">ShieldBR pode ser instalado direto no seu celular. Funciona como um app de verdade, mesmo offline!</div></div>
+    <div class="ob-sl" id="obs3"><span class="ob-icon">🏆</span><div class="ob-title">Ganhe e Indique</div><div class="ob-desc">Acumule pontos, suba no ranking e ganhe comissão indicando o ShieldBR Premium para amigos!</div></div>
+  </div>
+  <div class="ob-dots"><div class="ob-dot on" id="odd0"></div><div class="ob-dot" id="odd1"></div><div class="ob-dot" id="odd2"></div><div class="ob-dot" id="odd3"></div></div>
+  <button class="ob-btn" id="ob-btn" onclick="obNext()">Próximo →</button>
+  <button class="ob-skip" onclick="fecharOb()">Pular introdução</button>
+</div>
+
+<!-- PWA BANNER -->
+<div id="pwaBar">
+  <div class="pwa-icon">📱</div>
+  <div class="pwa-info"><div class="pwa-title">Instalar ShieldBR</div><div class="pwa-sub">Adicione à tela inicial como um app real!</div></div>
+  <button class="pwa-btn" onclick="instalarPWA()">Instalar</button>
+  <button class="pwa-close" onclick="document.getElementById('pwaBar').classList.remove('show')">✕</button>
+</div>
+
+<!-- NOTIF BANNER -->
+<div id="notifBanner">
+  <div class="notif-ico">🚨</div>
+  <div class="notif-txt" id="notifTxt">Novo golpe detectado no Brasil!</div>
+  <button class="notif-close" onclick="document.getElementById('notifBanner').classList.remove('show')">✕</button>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="nav-brand">ShieldBR</div>
+  <div class="nav-acts">
+    <button class="nav-btn" id="btnOffline" title="Modo Offline" style="font-size:13px;font-weight:700;color:var(--grn);">📶</button>
+    <button class="nav-btn" onclick="toggleDark()" id="btnDark">🌙</button>
+    <button class="nav-user" id="navUser" onclick="ir('pg-perfil',null)">D</button>
+    <a href="https://wa.me/5566992388467" class="nav-btn" style="text-decoration:none;">💬</a>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab on" onclick="ir('pg-home',this)"><i>🔍</i>Analisar</button>
+  <button class="tab" onclick="ir('pg-chat',this)"><i>🤖</i>IA Chat</button>
+  <button class="tab" onclick="ir('pg-dash',this)"><i>📊</i>Dashboard</button>
+  <button class="tab" onclick="ir('pg-hist',this)"><i>📋</i>Histórico</button>
+  <button class="tab" onclick="ir('pg-sim',this)"><i>🎮</i>Quiz</button>
+  <button class="tab" onclick="ir('pg-golpes',this)"><i>🔥</i>Golpes</button>
+  <button class="tab" onclick="ir('pg-dic',this)"><i>📚</i>Dicionário</button>
+  <button class="tab" onclick="ir('pg-perfil',this)"><i>👤</i>Perfil</button>
+  <button class="tab" onclick="ir('pg-mais',this)"><i>⚙️</i>Mais</button>
+</div>
+
+<!-- ════ HOME ════ -->
+<div class="pg on" id="pg-home">
+  <div class="hero">
+    <div class="hero-part" id="parts"></div>
+    <div class="hero-c">
+      <div class="hero-badge">🇧🇷 Proteção Digital em Tempo Real</div>
+      <div class="hero-logo">ShieldBR</div>
+      <div class="hero-tag">ESCUDO DIGITAL DO BRASIL</div>
+      <div class="hero-stats">
+        <div class="hs"><span class="n" id="cG">0</span><span class="l">Bloqueados</span></div>
+        <div class="hs"><span class="n" id="cP">0</span><span class="l">Protegidos</span></div>
+        <div class="hs"><span class="n">98%</span><span class="l">Precisão</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="economia"><div class="eco-ico">💰</div><div><div class="eco-lbl">Dinheiro protegido</div><div class="eco-val" id="ecoVal">R$ 0</div><div style="font-size:11px;color:#666;">em prejuízos evitados</div></div></div>
+  <div id="adDia" class="ad"></div>
+
+  <div class="sec">
+    <button class="sos-btn" onclick="toggleSOS()">🆘 MODO SOS — ESTOU SENDO ENGANADO AGORA!</button>
+    <div class="sos-panel" id="sosPanel">
+      <div style="font-size:14px;font-weight:800;color:var(--red);margin-bottom:12px;">⚡ SIGA AGORA:</div>
+      <div class="sos-step"><div class="sos-n">1</div><div><h5>NÃO transfira NADA</h5><p>Nenhum Pix, transferência ou pagamento. Mesmo urgente.</p></div></div>
+      <div class="sos-step"><div class="sos-n">2</div><div><h5>Desligue o telefone</h5><p>Banco, Receita e Polícia NUNCA pedem transferências por telefone.</p></div></div>
+      <div class="sos-step"><div class="sos-n">3</div><div><h5>Ligue no número do cartão</h5><p>Use o número no <strong>verso do seu cartão</strong>.</p></div></div>
+      <div class="sos-step"><div class="sos-n">4</div><div><h5>Confirme com familiar</h5><p>Ligue no número que você já tem salvo para confirmar.</p></div></div>
+      <div class="sos-step"><div class="sos-n">5</div><div><h5>Chame o Daniel</h5><p><a href="https://wa.me/5566992388467">Falar com o Daniel agora →</a></p></div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-t">⚡ Análise Rápida <span class="offline-tag">OFFLINE</span></div>
+    <div class="qk">
+      <div class="qk-t">Cole qualquer coisa — detecta automaticamente</div>
+      <input class="qk-i" id="qkIn" placeholder="Link, boleto, telefone, CPF, Pix..." oninput="detectTipo()">
+      <div class="qk-types">
+        <button class="qk-tp" id="qt-link">🔗 Link</button>
+        <button class="qk-tp" id="qt-bol">📑 Boleto</button>
+        <button class="qk-tp" id="qt-tel">📞 Tel</button>
+        <button class="qk-tp" id="qt-pix">💸 Pix</button>
+        <button class="qk-tp" id="qt-cnpj">🏢 CNPJ</button>
+      </div>
+      <button class="btn bp" onclick="anRapido()" id="btnQk">🔍 Analisar Agora</button>
+      <div id="resQk" class="scc"></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-t">🔧 Ferramentas Avançadas</div>
+    <div class="tc">
+      <div class="tc-h"><div class="tc-ico i-r">🔗</div><div class="tc-info"><h3>Analisar Link <span class="ai-tag">IA</span></h3><p>Phishing, encurtadores e domínios falsos</p></div></div>
+      <div class="iw"><input type="text" id="iLink" placeholder="https://..."></div>
+      <button class="btn bp" onclick="anLink()" id="btnLink">Analisar Link</button>
+      <div id="rLink" class="scc"></div>
+    </div>
+    <div class="tc">
+      <div class="tc-h"><div class="tc-ico i-b">📑</div><div class="tc-info"><h3>Analisar Boleto <span class="offline-tag">OFFLINE</span></h3><p>Banco real, vencimento e valor extraídos</p></div></div>
+      <div class="iw"><input type="text" id="iBol" placeholder="Código de barras..." oninput="this.value=this.value.replace(/\D/g,'')"></div>
+      <button class="btn bb" onclick="anBoleto()">Analisar Boleto</button>
+      <div id="rBol" class="scc"></div>
+    </div>
+    <div class="tc">
+      <div class="tc-h"><div class="tc-ico i-o">📞</div><div class="tc-info"><h3>Analisar Telefone <span class="ai-tag">IA</span></h3><p>DDD, estado, tipo e padrões de fraude</p></div></div>
+      <div class="iw"><input type="text" id="iTel" placeholder="(00) 00000-0000" oninput="fmtTel(this)"></div>
+      <button class="btn bo" onclick="anTel()" id="btnTel">Analisar Telefone</button>
+      <div id="rTel" class="scc"></div>
+    </div>
+    <div class="tc">
+      <div class="tc-h"><div class="tc-ico i-t">💸</div><div class="tc-info"><h3>Analisar Chave Pix <span class="offline-tag">OFFLINE</span></h3><p>Valida CPF, CNPJ, e-mail e UUID</p></div></div>
+      <div class="iw"><input type="text" id="iPix" placeholder="CPF, CNPJ, e-mail, telefone..."></div>
+      <button class="btn bt" onclick="anPix()">Analisar Pix</button>
+      <div id="rPix" class="scc"></div>
+    </div>
+    <div class="tc">
+      <div class="tc-h"><div class="tc-ico i-y">🏢</div><div class="tc-info"><h3>Verificar CNPJ <span class="ai-tag">IA</span></h3><p>Verifica se empresa existe e analisa</p></div></div>
+      <div class="iw"><input type="text" id="iCNPJ" placeholder="00.000.000/0000-00" oninput="fmtCNPJ(this)"></div>
+      <button class="btn byd" onclick="anCNPJ()" id="btnCNPJ">Verificar CNPJ</button>
+      <div id="rCNPJ" class="scc"></div>
+    </div>
+    <div class="tc">
+      <div class="tc-h"><div class="tc-ico i-p">📸</div><div class="tc-info"><h3>Analisar Print <span class="ai-tag">IA</span></h3><p>A IA analisa a imagem suspeita</p></div></div>
+      <div class="img-drop" id="imgDrop">
+        <input type="file" accept="image/*" id="imgInput" onchange="previewImg(event)">
+        <span class="d-ico">📷</span>
+        <div class="d-t">Toque para selecionar</div>
+        <div class="d-s">Print de mensagem ou boleto suspeito</div>
+      </div>
+      <img id="imgPrev" class="img-prev" alt="Preview">
+      <button class="btn bpu" onclick="anImg()" id="btnImg">🤖 Analisar com IA</button>
+      <div id="rImg" class="scc"></div>
+    </div>
+    <div class="tc">
+      <div class="tc-h"><div class="tc-ico i-g">💬</div><div class="tc-info"><h3>Analisar Conversa <span class="ai-tag">IA</span></h3><p>Cole conversa suspeita do WhatsApp</p></div></div>
+      <textarea class="conv-area" id="iConv" placeholder="Cole aqui a conversa suspeita..."></textarea>
+      <button class="btn bg" onclick="anConv()" id="btnConv">🤖 Analisar Conversa</button>
+      <div id="rConv"></div>
+    </div>
+    <div class="tc">
+      <div class="tc-h"><div class="tc-ico i-d">🔐</div><div class="tc-info"><h3>Gerador de Senha Segura <span class="offline-tag">OFFLINE</span></h3><p>Cria senhas fortes e seguras</p></div></div>
+      <div class="senha-display" id="senhaDisplay">Clique em Gerar</div>
+      <div class="senha-opts">
+        <button class="senha-opt on" id="opt-letras" onclick="toggleSenhaOpt('letras',this)">Letras</button>
+        <button class="senha-opt on" id="opt-numeros" onclick="toggleSenhaOpt('numeros',this)">Números</button>
+        <button class="senha-opt on" id="opt-simbolos" onclick="toggleSenhaOpt('simbolos',this)">Símbolos</button>
+      </div>
+      <div class="iw"><input type="range" id="senhaLen" min="8" max="32" value="16" oninput="gerarSenha()" style="width:100%;accent-color:var(--red);"></div>
+      <div style="text-align:center;font-size:11px;color:var(--mt);margin-bottom:9px;">Tamanho: <span id="senhaLenVal">16</span> caracteres</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn bp" onclick="gerarSenha()" style="flex:1;">🔐 Gerar Senha</button>
+        <button class="btn bgh" onclick="copiarSenha()" style="flex:1;">📋 Copiar</button>
+      </div>
+    </div>
+    <div class="tc">
+      <div class="tc-h"><div class="tc-ico i-r">📊</div><div class="tc-info"><h3>Score de Vulnerabilidade <span class="offline-tag">OFFLINE</span></h3><p>Descubra sua exposição a golpes</p></div></div>
+      <div id="riscoPergs">
+        <div style="margin-bottom:12px;"><div class="r-q">Faixa de idade?</div><div class="r-opts"><button class="risco-opt" onclick="sR('id','j',this)">18–35</button><button class="risco-opt" onclick="sR('id','m',this)">36–55</button><button class="risco-opt" onclick="sR('id','s',this)">56+</button></div></div>
+        <div style="margin-bottom:12px;"><div class="r-q">Usa banco pelo celular?</div><div class="r-opts"><button class="risco-opt" onclick="sR('banco','s',this)">Todo dia</button><button class="risco-opt" onclick="sR('banco','av',this)">Às vezes</button><button class="risco-opt" onclick="sR('banco','n',this)">Raramente</button></div></div>
+        <div style="margin-bottom:12px;"><div class="r-q">Usa Pix?</div><div class="r-opts"><button class="risco-opt" onclick="sR('pix','s',this)">Sim</button><button class="risco-opt" onclick="sR('pix','n',this)">Não</button></div></div>
+        <div style="margin-bottom:12px;"><div class="r-q">Já clicou em link suspeito?</div><div class="r-opts"><button class="risco-opt" onclick="sR('hist','s',this)">Sim</button><button class="risco-opt" onclick="sR('hist','n',this)">Nunca</button><button class="risco-opt" onclick="sR('hist','t',this)">Não sei</button></div></div>
+        <button class="btn byd" onclick="calcR()">📊 Calcular Score</button>
+      </div>
+      <div id="riscoMeter" style="display:none;animation:up .4s ease;">
+        <span id="rNum" style="font-family:'Bebas Neue',sans-serif;font-size:44px;text-align:center;display:block;"></span>
+        <div id="rLbl" style="text-align:center;font-size:12px;font-weight:700;margin-bottom:12px;"></div>
+        <div style="height:14px;background:var(--bdr);border-radius:7px;overflow:hidden;margin:8px 0;"><div id="rBar" style="height:100%;border-radius:7px;transition:width 1.2s ease;"></div></div>
+        <div id="rDica" style="font-size:12px;color:var(--mt);line-height:1.7;white-space:pre-line;"></div>
+        <button class="btn bgh" onclick="resetR()" style="margin-top:12px;font-size:12px;padding:10px;">🔄 Refazer</button>
+      </div>
+    </div>
+  </div>
+  <div class="sec">
+    <a href="https://wa.me/5566992388467" class="big big-zap">🚨 Falar com o Especialista</a>
+    <button class="big big-dk" onclick="comp()">🚀 Proteger um Amigo</button>
+  </div>
+</div>
+
+<!-- ════ CHAT IA ════ -->
+<div class="pg" id="pg-chat">
+  <div class="sec" style="margin-top:14px;">
+    <div class="sec-t">🤖 Chat com IA de Segurança</div>
+    <div class="chat-wrap">
+      <div class="chat-header">
+        <div class="chat-av">🛡️</div>
+        <div><div class="chat-name">ShieldAI</div><div class="chat-status"><span class="chat-dot"></span> online agora</div></div>
+      </div>
+      <div class="chat-msgs" id="chatMsgs">
+        <div class="chat-msg ai">Olá! 👋 Sou o ShieldAI. Pode me perguntar sobre qualquer golpe, link, boleto ou situação suspeita. Estou aqui 24h! 🛡️</div>
+      </div>
+      <div class="chat-sugs">
+        <button class="chat-sug" onclick="enviarSug(this)">Recebi um Pix errado</button>
+        <button class="chat-sug" onclick="enviarSug(this)">Link suspeito</button>
+        <button class="chat-sug" onclick="enviarSug(this)">Ligação do banco</button>
+        <button class="chat-sug" onclick="enviarSug(this)">Boleto por email</button>
+      </div>
+      <div class="chat-input-wrap">
+        <input class="chat-input" id="chatInput" placeholder="Digite sua dúvida..." onkeydown="if(event.key==='Enter')enviarChat()">
+        <button class="chat-send" onclick="enviarChat()">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ DASHBOARD ════ -->
+<div class="pg" id="pg-dash">
+  <div class="sec" style="margin-top:14px;">
+    <div class="sec-t">📊 Estatísticas em Tempo Real</div>
+    <div class="dash-grid">
+      <div class="dash-card"><span class="d-num" style="color:var(--red);" id="dA">0</span><div class="d-lbl">Análises hoje</div></div>
+      <div class="dash-card"><span class="d-num" style="color:var(--grn);" id="dG">0</span><div class="d-lbl">Golpes bloqueados</div></div>
+      <div class="dash-card"><span class="d-num" style="color:var(--blu);" id="dU">0</span><div class="d-lbl">Usuários ativos</div></div>
+      <div class="dash-card"><span class="d-num" style="color:var(--ora);" id="dD">0</span><div class="d-lbl">Denúncias hoje</div></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">📈 Golpes bloqueados — últimos 7 dias</div>
+      <div class="chart-bars" id="chartBars"></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">🥧 Tipos mais comuns</div>
+      <div id="tipoList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ HISTÓRICO ════ -->
+<div class="pg" id="pg-hist">
+  <div class="sec" style="margin-top:14px;">
+    <div class="sec-t">📋 Suas consultas</div>
+    <div id="listaHist"></div>
+    <button class="btn bgh" onclick="limparHist()" style="margin-top:6px;font-size:12px;padding:10px;">🗑️ Limpar histórico</button>
+  </div>
+</div>
+
+<!-- ════ SIMULADOR ════ -->
+<div class="pg" id="pg-sim">
+  <div class="sec" style="margin-top:14px;">
+    <div class="sec-t">🎮 Simulador de Golpes</div>
+    <div class="sim-wh">
+      <div class="sim-header"><div class="sim-av">👤</div><div><div class="sim-name" id="simNome">Carregando...</div><div class="sim-status">online</div></div></div>
+      <div class="sim-msgs" id="simMsgs"></div>
+      <div class="sim-opts" id="simOpts"></div>
+      <div class="sim-fb" id="simFb"></div>
+    </div>
+    <div class="qz-wrap" style="margin-bottom:12px;">
+      <div class="qz-prog"><div class="qz-prog-f" id="simBar" style="width:0%"></div></div>
+      <div class="qz-pts">🎯 <span id="simPts">0</span> pontos</div>
+      <div id="simStatus" style="font-size:13px;color:var(--mt);text-align:center;padding:10px;">Complete os cenários!</div>
+    </div>
+    <div class="sec-t">📝 Quiz Anti-Golpe</div>
+    <div class="qz-wrap">
+      <div class="qz-prog"><div class="qz-prog-f" id="qzBar" style="width:0%"></div></div>
+      <div class="qz-pts">🏆 <span id="qzPts">0</span> pontos</div>
+      <div id="qzQ" class="qz-q">Carregando...</div>
+      <div id="qzOpts"></div>
+      <div class="qz-fb" id="qzFb"></div>
+      <div id="qzProg" style="font-size:11px;color:var(--mt);margin-top:7px;text-align:center;"></div>
+    </div>
+    <div class="cert" id="certBox">
+      <div class="cert-seal">🏆</div>
+      <div class="cert-t">CERTIFICADO</div>
+      <div style="font-size:10px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">Anti-Golpe Digital 2026</div>
+      <div class="cert-name" id="certNome">APROVADO</div>
+      <div class="cert-desc">Completou o treinamento<br><strong>ShieldBR • 2026</strong></div>
+      <button class="btn bg" onclick="compCert()" style="margin-top:4px;">📤 Compartilhar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ GOLPES ════ -->
+<div class="pg" id="pg-golpes">
+  <div class="sec" style="margin-top:14px;">
+    <div class="sec-t">🔥 Golpes mais aplicados em 2026</div>
+    <div class="gc"><div class="gc-tag">🚨 #1</div><div class="gc-title">Falso Entregador</div><div class="gc-desc">Ligam dizendo ter sua encomenda e pedem taxa ou dados pessoais.</div><div class="gc-dica">✅ Rastreie nos Correios. Nunca pague por telefone.</div></div>
+    <div class="gc"><div class="gc-tag">📱 WhatsApp</div><div class="gc-title">Clonagem de WhatsApp</div><div class="gc-desc">Pedem o código de 6 dígitos do SMS e tomam sua conta.</div><div class="gc-dica">✅ Nunca repasse o código. Ative verificação em 2 etapas.</div></div>
+    <div class="gc"><div class="gc-tag">💸 Pix</div><div class="gc-title">Pix Errado</div><div class="gc-desc">Pix inicial fraudulento — o dinheiro devolvido é seu.</div><div class="gc-dica">✅ Verifique no extrato antes de qualquer devolução.</div></div>
+    <div class="gc"><div class="gc-tag">🏦 Banco</div><div class="gc-title">Falso Banco Central</div><div class="gc-desc">Ligam fingindo ser do Banco Central pedindo transferência urgente.</div><div class="gc-dica">✅ Banco Central NUNCA liga pedindo transferências.</div></div>
+    <div class="gc"><div class="gc-tag">🤖 IA</div><div class="gc-title">Voz Clonada por IA</div><div class="gc-desc">IA clona voz de familiar com poucos segundos de áudio.</div><div class="gc-dica">✅ Crie palavra secreta de emergência com a família.</div></div>
+    <div class="gc"><div class="gc-tag">🛒 Online</div><div class="gc-title">Avaliador Pago</div><div class="gc-desc">Pedem depósito inicial que nunca volta.</div><div class="gc-dica">✅ Empresa séria nunca pede depósito para você trabalhar.</div></div>
+
+    <div class="sec-t">📢 Mural da Comunidade</div>
+    <div class="tc">
+      <div class="iw"><select id="tpGolpe"><option value="">Tipo de golpe...</option><option>📱 WhatsApp / SMS</option><option>🔗 Link suspeito</option><option>💸 Pix / Transferência</option><option>📑 Boleto falso</option><option>📞 Ligação falsa</option><option>🤖 Voz clonada por IA</option><option>Outro</option></select></div>
+      <div class="iw"><textarea id="descGolpe" placeholder="Descreva o golpe para alertar a comunidade..."></textarea></div>
+      <button class="btn bo" onclick="denunciar()">📢 Publicar no Mural</button>
+      <div id="msgDen" style="display:none;margin-top:9px;padding:10px;border-radius:10px;font-size:12px;font-weight:700;"></div>
+    </div>
+    <div id="muralItens"></div>
+  </div>
+</div>
+
+<!-- ════ DICIONÁRIO ════ -->
+<div class="pg" id="pg-dic">
+  <div class="sec" style="margin-top:14px;">
+    <div class="sec-t">📚 Dicionário de Golpes</div>
+    <input class="dic-search" id="dicSearch" placeholder="🔍 Buscar golpe... (ex: Pix, boleto, WhatsApp)" oninput="buscarDic()">
+    <div id="dicResultados"></div>
+  </div>
+</div>
+
+<!-- ════ PERFIL ════ -->
+<div class="pg" id="pg-perfil">
+  <div class="sec" style="margin-top:14px;">
+    <div class="perfil-hero">
+      <div class="perfil-av" id="perfilAv">D</div>
+      <div class="perfil-nome" id="perfilNome">Daniel</div>
+      <div class="perfil-nivel" id="perfilNivel">🛡️ Protetor Digital — Nível 1</div>
+      <div class="perfil-badges">
+        <div class="p-badge">🔍 Analisador</div>
+        <div class="p-badge" id="b-quiz" style="display:none;">🎯 Quiz Master</div>
+        <div class="p-badge" id="b-sim" style="display:none;">🎮 Simulador</div>
+        <div class="p-badge" id="b-den" style="display:none;">📢 Denunciante</div>
+        <div class="p-badge">🇧🇷 Patriota</div>
+      </div>
+      <div class="xp-bar-bg"><div class="xp-bar-f" id="xpBar" style="width:5%;"></div></div>
+      <div class="xp-info"><span>XP: <span id="xpAtual">0</span></span><span>Próximo nível: 500 XP</span></div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><span class="s-num" id="stA">0</span><div class="s-lbl">Análises</div></div>
+      <div class="stat-card"><span class="s-num" id="stG">0</span><div class="s-lbl">Bloqueados</div></div>
+      <div class="stat-card"><span class="s-num" id="stP">0</span><div class="s-lbl">Pontos</div></div>
+    </div>
+    <div class="sec-t">🏆 Ranking Brasil</div>
+    <div id="rankingList"></div>
+    <div class="sec-t" style="margin-top:16px;">⚙️ Perfil</div>
+    <div class="tc">
+      <div class="iw"><input type="text" id="cfgNome" placeholder="Seu nome"></div>
+      <div class="iw"><input type="text" id="cfgCidade" placeholder="Sua cidade"></div>
+      <button class="btn bp" onclick="salvarPerfil()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MAIS ════ -->
+<div class="pg" id="pg-mais">
+  <div class="sec" style="margin-top:14px;">
+
+    <div class="sec-t">💸 Programa de Afiliados</div>
+    <div class="afil-card">
+      <div class="afil-titulo">💸 AFILIADO</div>
+      <div class="afil-sub">Indique e ganhe comissão em cada venda Premium!</div>
+      <div class="afil-item"><span>💰</span> R$10 por cada indicação que assinar Premium</div>
+      <div class="afil-item"><span>📊</span> Acompanhe suas indicações em tempo real</div>
+      <div class="afil-item"><span>💳</span> Pagamento via Pix todo dia 10</div>
+      <div class="afil-item"><span>🚀</span> Sem limite de indicações</div>
+      <div class="afil-link" id="afilLink">Seu link: https://daniel250568.github.io/daniel-resolve-/?ref=SEU_CODIGO</div>
+      <button class="btn bg" onclick="copiarAfil()" style="margin-top:10px;">📋 Copiar meu link de afiliado</button>
+      <button class="btn bo" onclick="irPrem()" style="margin-top:8px;">💬 Quero ser afiliado no WhatsApp</button>
     </div>
 
-    <div class="container">
-        <div class="card">
-            <div class="card-title"><i class="fas fa-shield-virus"></i> Painel de Investigação</div>
-            
-            <img id="preview-img" src="">
-            
-            <input type="text" id="mainInput" placeholder="Selecione uma ferramenta abaixo...">
-            <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFile(event)">
-
-            <div class="grid-tools">
-                <button class="btn-tool" onclick="setMode('print')"><i class="fas fa-camera"></i> Analisar Print</button>
-                <button class="btn-tool" onclick="setMode('pix')"><i class="fas fa-money-bill-wave"></i> Pix / CPF / CNPJ</button>
-                <button class="btn-tool" onclick="setMode('boleto')"><i class="fas fa-barcode"></i> Analisar Boleto</button>
-                <button class="btn-tool" onclick="setMode('link')"><i class="fas fa-link"></i> Verificar Link</button>
-                <button class="btn-tool" onclick="setMode('ddd')"><i class="fas fa-map-marker-alt"></i> Rastrear DDD</button>
-                <button class="btn-tool" onclick="setMode('conversa')"><i class="fas fa-comments"></i> Ler Conversa</button>
-            </div>
-            
-            <button class="btn-execute" onclick="runAI()">INICIAR VARREDURA PRO</button>
-            
-            <div id="res"></div>
-        </div>
+    <div class="sec-t">👨‍👩‍👧 Proteja sua Família</div>
+    <div class="tc">
+      <div class="iw"><select id="perfilFam"><option value="">Quem proteger?</option><option value="mae">Minha Mãe / Pai</option><option value="avo">Minha Avó / Avô</option><option value="filho">Meu Filho Adolescente</option><option value="conj">Meu Cônjuge</option><option value="amigo">Um Amigo</option></select></div>
+      <button class="btn bp" onclick="gerarGuia()">🛡️ Gerar Guia</button>
+      <div id="protResult" style="margin-top:12px;display:none;animation:up .4s ease;"></div>
     </div>
 
-    <div class="nav-bar">
-        <div class="nav-item active"><i class="fas fa-microchip"></i><br>IA</div>
-        <div class="nav-item"><i class="fas fa-broadcast-tower"></i><br>Radar</div>
-        <div class="nav-item"><i class="fas fa-tools"></i><br>Tools</div>
-        <div class="nav-item"><i class="fas fa-graduation-cap"></i><br>Guia</div>
-        <div class="nav-item"><i class="fas fa-star"></i><br>Pro</div>
+    <div class="sec-t">🆘 Caí no Golpe — E Agora?</div>
+    <div class="passo"><div class="passo-n">1</div><div><h5>Bloqueie sua conta AGORA</h5><p>Número no verso do cartão — peça bloqueio imediato.</p></div></div>
+    <div class="passo"><div class="passo-n">2</div><div><h5>Mude todas as senhas</h5><p>Banco, WhatsApp, e-mail e redes sociais.</p></div></div>
+    <div class="passo"><div class="passo-n">3</div><div><h5>Registre B.O.</h5><p>delegaciaonline.mj.gov.br — essencial para recuperar valores.</p></div></div>
+    <div class="passo"><div class="passo-n">4</div><div><h5>Banco Central</h5><p>bcb.gov.br — obrigação legal de investigar Pix.</p></div></div>
+    <div class="passo"><div class="passo-n">5</div><div><h5>Fale com o Daniel</h5><p>Orientação gratuita e personalizada.</p></div></div>
+    <a href="https://wa.me/5566992388467" class="big big-zap" style="margin-top:4px;">🚨 Falar com o Daniel Agora</a>
+
+    <div class="sec-t" style="margin-top:16px;">👑 Premium</div>
+    <div class="prem">
+      <div class="prem-t">👑 PREMIUM</div>
+      <div class="prem-s">Proteção máxima — R$29,90/mês</div>
+      <div class="prem-item"><span>🤖</span> IA ilimitada</div>
+      <div class="prem-item"><span>⚡</span> Suporte 24h</div>
+      <div class="prem-item"><span>🔔</span> Alertas em tempo real</div>
+      <div class="prem-item"><span>👨‍👩‍👧</span> Até 5 membros da família</div>
+      <div class="prem-item"><span>📹</span> Consultoria por vídeo</div>
+      <div class="prem-item"><span>📊</span> Relatório semanal</div>
+      <button class="btn bp" onclick="irPrem()" style="margin-top:10px;">💬 Assinar via WhatsApp</button>
     </div>
 
-    <script>
-        const API_KEY = "AIzaSyALrqcdO4JYfwdXl3eO-YQQJcwpqOxzHxc";
-        let mode = "geral";
+    <div class="sec-t">⭐ Depoimentos</div>
+    <div class="dep"><div class="dep-nome">Maria S. — Cuiabá, MT</div><div class="dep-stars">★★★★★</div><p>"Salvou R$1.200 meus de um boleto falso!"</p></div>
+    <div class="dep"><div class="dep-nome">João P. — Rondonópolis, MT</div><div class="dep-stars">★★★★★</div><p>"Link suspeito identificado na hora. Ferramenta incrível!"</p></div>
+    <div class="dep"><div class="dep-nome">Dona Rosa — Várzea Grande, MT</div><div class="dep-stars">★★★★★</div><p>"Minha família toda usa agora!"</p></div>
 
-        function setMode(m) {
-            mode = m;
-            document.querySelectorAll('.btn-tool').forEach(b => b.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            
-            const input = document.getElementById('mainInput');
-            input.style.display = "block";
-            document.getElementById('preview-img').style.display = "none";
+    <div class="sec-t">🔗 Gerar Link</div>
+    <div class="tc">
+      <div class="iw"><input type="text" id="nomeEnvio" placeholder="Seu nome"></div>
+      <button class="btn bb" onclick="gerarLink()">🔗 Gerar e enviar pelo WhatsApp</button>
+      <div id="msgFam" style="display:none;margin-top:9px;padding:10px;border-radius:10px;font-size:12px;font-weight:700;color:#1a8a35;background:#e8f5e9;"></div>
+    </div>
+    <button class="big big-dk" onclick="comp()">🚀 Proteger um Amigo</button>
+  </div>
+  <div class="rodape">ShieldBR © 2026 — Escudo Digital do Brasil<br>Criado por Daniel • Todos os direitos reservados</div>
+</div>
 
-            if(m === 'print') {
-                document.getElementById('fileInput').click();
-                input.placeholder = "Aguardando imagem do print...";
-            } else if(m === 'ddd') input.placeholder = "Digite o número com DDD...";
-            else if(m === 'pix') input.placeholder = "Chave Pix, CPF ou CNPJ...";
-            else if(m === 'boleto') input.placeholder = "Cole a linha digitável do boleto...";
-            else if(m === 'link') input.placeholder = "Cole o link suspeito aqui...";
-            else if(m === 'conversa') input.placeholder = "Cole trechos da conversa suspeita...";
-        }
+<script>
+'use strict';
+const APP_URL='https://daniel250568.github.io/daniel-resolve-/';
 
-        function handleFile(e) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const img = document.getElementById('preview-img');
-                img.src = reader.result;
-                img.style.display = "block";
-                document.getElementById('mainInput').style.display = "none";
-            };
-            reader.readAsDataURL(e.target.files[0]);
-        }
+// ── SPLASH ──
+setTimeout(()=>{
+  const s=document.getElementById('splash');
+  s.classList.add('out');
+  setTimeout(()=>{s.remove();iniciar();},800);
+},2200);
 
-        async function runAI() {
-            const out = document.getElementById('res');
-            const inputVal = document.getElementById('mainInput').value;
-            const imgData = document.getElementById('preview-img').src;
+function iniciar(){
+  if(!localStorage.getItem('sbr5_ob'))document.getElementById('ob').classList.add('show');
+  setTimeout(mostrarNotif,3000);
+  verificarPWA();
+}
 
-            out.style.display = "block";
-            out.innerHTML = "⏳ <b>ACESSANDO PROTOCOLOS DE SEGURANÇA...</b>";
+// ── NOTIFICAÇÕES ──
+const NOTIFS=[
+  '🚨 Novo golpe: Falso Entregador em alta no Brasil!',
+  '⚠️ Alerta: Golpe do Pix Errado cresceu 34% esta semana!',
+  '🤖 Novo: Voz clonada por IA atingiu 89 vítimas hoje!',
+  '📱 Atenção: Clonagem de WhatsApp em alta no MT!',
+  '💸 Cuidado: Novo golpe de boleto falso circulando!',
+];
+function mostrarNotif(){
+  const b=document.getElementById('notifBanner');
+  document.getElementById('notifTxt').textContent=NOTIFS[Math.floor(Math.random()*NOTIFS.length)];
+  b.classList.add('show');
+  setTimeout(()=>b.classList.remove('show'),5000);
+}
 
-            let prompt = "";
-            
-            if(mode === 'print') {
-                out.innerHTML = "🔍 <b>LENDO TEXTO DA IMAGEM...</b>";
-                const rec = await Tesseract.recognize(imgData, 'por');
-                prompt = `Analise este print e identifique se há sinais de montagem, golpe de comprovante falso ou engenharia social: ${rec.data.text}`;
-            } else if(mode === 'ddd') {
-                prompt = `Identifique a localização exata do DDD deste número: ${inputVal}. Verifique se essa região tem histórico de golpes de falsa central ou clonagem de WhatsApp.`;
-            } else if(mode === 'pix') {
-                prompt = `Analise esta chave (CPF, CNPJ ou Pix): ${inputVal}. Diga o banco de origem se possível e se há padrão de 'conta laranja' ou fraude.`;
-            } else if(mode === 'boleto') {
-                prompt = `Verifique se este código de boleto é legítimo ou se foi alterado por vírus de linha digitável: ${inputVal}.`;
-            } else {
-                prompt = `Varredura de segurança para: ${inputVal}. Analise riscos de golpe.`;
-            }
+// ── PWA ──
+let pwaPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();pwaPrompt=e;document.getElementById('pwaBar').classList.add('show');});
+function instalarPWA(){if(pwaPrompt){pwaPrompt.prompt();pwaPrompt.userChoice.then(()=>{pwaPrompt=null;document.getElementById('pwaBar').classList.remove('show');});}}
+function verificarPWA(){if(window.matchMedia('(display-mode: standalone)').matches){document.getElementById('btnOffline').textContent='📱';document.getElementById('btnOffline').title='App instalado!';}}
 
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                });
-                const data = await response.json();
-                out.innerHTML = "🛡️ <b>LAUDO TÉCNICO SHIELDBR:</b><br><br>" + data.candidates[0].content.parts[0].text.replace(/\n/g, "<br>");
-            } catch (e) {
-                out.innerHTML = "❌ Erro na conexão. Verifique sua internet ou chave API.";
-            }
-        }
-    </script>
+// ── CONFETI ──
+function lancarConfeti(){
+  const el=document.getElementById('confeti');el.style.display='block';el.innerHTML='';
+  const cores=['#e63946','#ff6b2b','#ffd60a','#2dc653','#0096c7','#7209b7'];
+  for(let i=0;i<60;i++){
+    const p=document.createElement('div');p.className='confeti-piece';
+    p.style.cssText=`left:${Math.random()*100}%;background:${cores[Math.floor(Math.random()*cores.length)]};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*.5}s;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+    el.appendChild(p);
+  }
+  setTimeout(()=>{el.style.display='none';el.innerHTML='';},4000);
+}
+
+// ── ONBOARDING ──
+let obI=0;
+function obNext(){
+  if(obI<3){document.getElementById('obs'+obI).classList.remove('on');document.getElementById('odd'+obI).classList.remove('on');obI++;document.getElementById('obs'+obI).classList.add('on');document.getElementById('odd'+obI).classList.add('on');if(obI===3)document.getElementById('ob-btn').textContent='Começar →';}
+  else fecharOb();
+}
+function fecharOb(){const o=document.getElementById('ob');o.classList.add('out');setTimeout(()=>o.classList.remove('show','out'),500);localStorage.setItem('sbr5_ob','1');}
+
+// ── DARK MODE ──
+function toggleDark(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btnDark').textContent=d?'🌙':'☀️';localStorage.setItem('sbr5_t',d?'light':'dark');}
+(function(){if(localStorage.getItem('sbr5_t')==='dark'){document.documentElement.setAttribute('data-theme','dark');document.getElementById('btnDark').textContent='☀️';}})();
+
+// ── TABS ──
+function ir(id,tab){document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));document.getElementById(id).classList.add('on');if(tab)tab.classList.add('on');window.scrollTo(0,0);}
+
+// ── PARTÍCULAS ──
+(function(){const c=document.getElementById('parts');if(!c)return;for(let i=0;i<10;i++){const p=document.createElement('div');p.className='pt';p.style.cssText=`left:${Math.random()*100}%;animation-duration:${4+Math.random()*6}s;animation-delay:${Math.random()*6}s;width:${1+Math.random()*2}px;height:${1+Math.random()*2}px;`;c.appendChild(p);}})();
+
+// ── ALERTA DO DIA ──
+const ADS=[
+  {e:'📱',t:'Código SMS — Nunca Repasse',d:'O código de 6 dígitos do WhatsApp nunca deve ser compartilhado. Com ele qualquer pessoa toma sua conta.',tip:'✅ Ative verificação em 2 etapas agora.'},
+  {e:'💸',t:'Pix Errado — É Armadilha',d:'O Pix "por engano" é falso. Você devolve dinheiro real de um recebimento fictício que some depois.',tip:'✅ Só devolva depois de ver no extrato real do banco.'},
+  {e:'🔗',t:'Links Encurtados São Perigosos',d:'bit.ly e similares escondem o destino real.',tip:'✅ Cole qualquer link no ShieldBR antes de clicar.'},
+  {e:'🏦',t:'Banco Central Nunca Liga',d:'Banco Central, Receita e INSS NUNCA pedem transferências.',tip:'✅ Desligue e ligue no número do verso do cartão.'},
+  {e:'🤖',t:'Voz Clonada por IA',d:'IA clona vozes com poucos segundos de áudio.',tip:'✅ Crie uma palavra secreta de emergência com a família.'},
+  {e:'💼',t:'Vaga de Emprego Falsa',d:'Processo que pede taxa antes de contratar é golpe.',tip:'✅ Pesquise o CNPJ antes de qualquer pagamento.'},
+  {e:'👴',t:'Falso Parente em Apuros',d:'Voz clonada por IA fingi ser filho ou neto.',tip:'✅ Use a palavra secreta. Se não souber — é golpe.'},
+];
+(function(){const a=ADS[new Date().getDay()%ADS.length];document.getElementById('adDia').innerHTML=`<div class="ad-h">${a.e} Alerta do Dia!</div><div class="ad-b"><div class="ad-t">${a.t}</div><div class="ad-d">${a.d}</div><div class="ad-tip">${a.tip}</div></div>`;})();
+
+// ── CONTADORES ──
+function cnt(id,fim,dur){const el=document.getElementById(id);if(!el)return;let v=0;const s=fim/(dur/16);const t=setInterval(()=>{v+=s;if(v>=fim){v=fim;clearInterval(t);}el.textContent=Math.floor(v).toLocaleString('pt-BR');},16);}
+cnt('cG',1247,2000);cnt('cP',893,2000);
+(function(){let v=0;const fim=2847000;const s=fim/120;const t=setInterval(()=>{v+=s;if(v>=fim){v=fim;clearInterval(t);}document.getElementById('ecoVal').textContent='R$ '+Math.floor(v).toLocaleString('pt-BR');},16);})();
+
+// ── DASHBOARD ──
+(function(){
+  cnt('dA',342,1500);cnt('dG',89,1500);cnt('dU',1247,1500);cnt('dD',23,1500);
+  const dias=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  const vals=[45,62,38,71,89,54,67];const max=Math.max(...vals);
+  const barsEl=document.getElementById('chartBars');
+  dias.forEach((d,i)=>{const h=Math.round((vals[i]/max)*90);const cor=i===6?'var(--red)':'var(--blu)';barsEl.innerHTML+=`<div class="chart-bar-wrap"><div class="chart-bar-val" style="font-size:9px;font-weight:700;">${vals[i]}</div><div class="chart-bar" style="height:${h}px;background:${cor};"></div><div class="chart-bar-lbl">${d}</div></div>`;});
+  const tipos=[{n:'Pix Errado',pct:34,c:'#e63946'},{n:'WhatsApp',pct:28,c:'#ff6b2b'},{n:'Link/Phishing',pct:18,c:'#7209b7'},{n:'Boleto Falso',pct:12,c:'#0096c7'},{n:'Outros',pct:8,c:'#2dc653'}];
+  const tipoEl=document.getElementById('tipoList');
+  tipos.forEach(t=>{tipoEl.innerHTML+=`<div class="tipo-item"><div class="tipo-lbl">${t.n}</div><div class="tipo-bar-bg"><div class="tipo-bar-f" style="width:${t.pct}%;background:${t.c};"></div></div><div class="tipo-pct">${t.pct}%</div></div>`;});
+})();
+
+// ── USUÁRIO ──
+let USER=JSON.parse(localStorage.getItem('sbr5_user')||'{"nome":"Daniel","cidade":"Cuiabá, MT","pts":0,"an":0,"gl":0}');
+function salvarUser(){localStorage.setItem('sbr5_user',JSON.stringify(USER));}
+function addXP(n){USER.pts+=n;USER.an++;if(Math.random()>.4)USER.gl++;salvarUser();atualizarPerfil();}
+function atualizarPerfil(){
+  const nm=USER.nome||'D';
+  document.getElementById('perfilAv').textContent=nm[0].toUpperCase();
+  document.getElementById('navUser').textContent=nm[0].toUpperCase();
+  document.getElementById('perfilNome').textContent=nm;
+  const lvl=Math.max(1,Math.floor(USER.pts/500)+1);
+  document.getElementById('perfilNivel').textContent=`🛡️ Protetor Digital — Nível ${lvl}`;
+  document.getElementById('stA').textContent=USER.an;
+  document.getElementById('stG').textContent=USER.gl;
+  document.getElementById('stP').textContent=USER.pts;
+  document.getElementById('xpAtual').textContent=USER.pts;
+  document.getElementById('xpBar').style.width=Math.min(100,(USER.pts%500)/5)+'%';
+  document.getElementById('cfgNome').value=USER.nome||'';
+  document.getElementById('cfgCidade').value=USER.cidade||'';
+  const afilNome=(USER.nome||'Daniel').toUpperCase().replace(/ /g,'_');
+  document.getElementById('afilLink').textContent=`Seu link: ${APP_URL}?ref=${afilNome}`;
+  renderRanking();
+}
+function salvarPerfil(){USER.nome=document.getElementById('cfgNome').value.trim()||USER.nome;USER.cidade=document.getElementById('cfgCidade').value.trim()||USER.cidade;salvarUser();atualizarPerfil();alert('Perfil salvo!');}
+atualizarPerfil();
+
+const RANK_BASE=[
+  {nome:'Ana Lima',cidade:'São Paulo, SP',pts:2840,cor:'#e63946'},
+  {nome:'Carlos Silva',cidade:'Rio de Janeiro, RJ',pts:2210,cor:'#ff6b2b'},
+  {nome:'Maria Santos',cidade:'Belo Horizonte, MG',pts:1890,cor:'#7209b7'},
+  {nome:'Pedro Oliveira',cidade:'Salvador, BA',pts:1560,cor:'#0096c7'},
+  {nome:'Lucia Costa',cidade:'Curitiba, PR',pts:1230,cor:'#2dc653'},
+];
+function renderRanking(){
+  const lista=[{nome:USER.nome||'Daniel',cidade:USER.cidade||'Cuiabá, MT',pts:USER.pts,cor:'var(--red)'},...RANK_BASE];
+  lista.sort((a,b)=>b.pts-a.pts);
+  const emojis=['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣'];
+  document.getElementById('rankingList').innerHTML=lista.slice(0,6).map((r,i)=>`
+    <div class="rank-item" ${r.nome===USER.nome?'style="border-color:var(--red);background:rgba(230,57,70,.04);"':''}>
+      <div class="rank-pos" style="color:${i<3?'var(--yel)':'var(--mt)'}">${emojis[i]}</div>
+      <div class="rank-av" style="background:${r.cor||'var(--red)'};">${r.nome[0].toUpperCase()}</div>
+      <div class="rank-info"><div class="rank-nome">${r.nome}${r.nome===USER.nome?' (você)':''}</div><div class="rank-cidade">${r.cidade}</div></div>
+      <div class="rank-pts">${r.pts}</div>
+    </div>`).join('');
+}
+
+// ── SOS ──
+let sosOpen=false;
+function toggleSOS(){sosOpen=!sosOpen;document.getElementById('sosPanel').style.display=sosOpen?'block':'none';}
+
+// ── LOAD ──
+function setLoad(id,load,txt){const b=document.getElementById(id);if(!b)return;b.disabled=load;b.innerHTML=load?'<div class="spin"></div> Analisando...':txt;}
+
+// ── HISTÓRICO ──
+let hist=JSON.parse(localStorage.getItem('sbr5_hist')||'[]');
+const HICO={link:'🔗',boleto:'📑',tel:'📞',pix:'💸',cnpj:'🏢',img:'📸',conv:'💬',rapido:'⚡'};
+const HCOR={GOLPE:'#e63946',SUSPEITO:'#ff6b2b',SEGURO:'#2dc653',VÁLIDA:'#2dc653',INVÁLIDA:'#e63946',OK:'#2dc653',ATENÇÃO:'#ff6b2b',OFICIAL:'#0096c7',VERIFICAR:'#ff6b2b'};
+function salvarHist(tipo,valor,veredicto,score){hist.unshift({tipo,valor:valor.substring(0,48),veredicto,score,data:new Date().toLocaleString('pt-BR')});if(hist.length>50)hist=hist.slice(0,50);localStorage.setItem('sbr5_hist',JSON.stringify(hist));renderHist();addXP(10);}
+function renderHist(){const el=document.getElementById('listaHist');if(!hist.length){el.innerHTML='<div class="empty"><span>📋</span>Nenhuma consulta ainda.</div>';return;}el.innerHTML=hist.map(h=>`<div class="hi-card"><div class="hi-ico">${HICO[h.tipo]||'🔍'}</div><div class="hi-info"><div class="hi-tipo">${h.tipo}</div><div class="hi-val">${h.valor}</div><div class="hi-data">🕐 ${h.data}</div></div><div class="hi-sc"><span class="n" style="color:${HCOR[h.veredicto]||'#888'}">${h.score}</span><span class="l">${h.veredicto}</span></div></div>`).join('');}
+function limparHist(){if(confirm('Limpar?')){hist=[];localStorage.removeItem('sbr5_hist');renderHist();}}
+renderHist();
+
+// ── SCORE CARD ──
+function mkScc(id,cl,ico,titulo,sub,rows,dica,score,th,vh,ver){
+  const el=document.getElementById(id);
+  const C=2*Math.PI*27;const fill=C-(C*(score/100));
+  const cor=cl==='s-d'?'#e63946':cl==='s-w'?'#ff6b2b':'#2dc653';
+  el.className=`scc ${cl}`;
+  el.innerHTML=`<div class="scc-h"><div class="scc-ring"><svg width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="27" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="4"/><circle cx="30" cy="30" r="27" fill="none" stroke="${cor}" stroke-width="4" stroke-dasharray="${C.toFixed(2)}" stroke-dashoffset="${fill.toFixed(2)}" stroke-linecap="round"/></svg><span class="scc-num">${score}</span><span class="scc-lbl">Score</span></div><div class="scc-ti"><h3>${ico} ${titulo}</h3><p>${sub}</p></div></div><div class="scc-body"><div class="scc-rows">${rows.map(r=>`<div class="scc-row"><span class="sr-l">${r.l}</span><span class="sr-v">${r.v}</span></div>`).join('')}</div><div class="scc-tip">💡 ${dica}</div><button class="scc-share" onclick="compAnalise('${cl}','${titulo}','${score}','${(vh||'').substring(0,30)}')">📤 Compartilhar análise</button></div>`;
+  el.style.display='block';
+  if(th)salvarHist(th,vh||'',ver||'',score);
+}
+function compAnalise(cl,titulo,score,valor){const e=cl==='s-d'?'❌':cl==='s-w'?'⚠️':'✅';window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(`${e} *ShieldBR analisou:*\n"${valor}"\n*Resultado: ${titulo}*\nScore: ${score}/100\n\nVerifique também 👇\n${APP_URL}`),'_blank');}
+
+// ── DETECTAR TIPO ──
+let tdtt='';
+function detectTipo(){
+  const v=document.getElementById('qkIn').value.trim();
+  document.querySelectorAll('.qk-tp').forEach(b=>b.classList.remove('on'));
+  if(!v){tdtt='';return;}
+  const n=v.replace(/\D/g,'');
+  if(v.startsWith('http')||v.includes('www.')||v.includes('.com')||v.includes('.br')){tdtt='link';document.getElementById('qt-link').classList.add('on');}
+  else if(n.length>=44){tdtt='bol';document.getElementById('qt-bol').classList.add('on');}
+  else if(n.length===14){tdtt='cnpj';document.getElementById('qt-cnpj').classList.add('on');}
+  else if((n.length===10||n.length===11)&&!v.includes('@')&&!v.startsWith('+55')){tdtt='tel';document.getElementById('qt-tel').classList.add('on');}
+  else if(n.length===11||v.includes('@')||/^[0-9a-f-]{36}$/i.test(v)||v.startsWith('+55')){tdtt='pix';document.getElementById('qt-pix').classList.add('on');}
+  else tdtt='out';
+}
+async function anRapido(){
+  const v=document.getElementById('qkIn').value.trim();if(!v){alert('Cole algo!');return;}
+  detectTipo();
+  if(tdtt==='link'){document.getElementById('iLink').value=v;await anLink();copyScc('rLink','resQk');}
+  else if(tdtt==='bol'){document.getElementById('iBol').value=v.replace(/\D/g,'');anBoleto();copyScc('rBol','resQk');}
+  else if(tdtt==='tel'){document.getElementById('iTel').value=v;await anTel();copyScc('rTel','resQk');}
+  else if(tdtt==='pix'){document.getElementById('iPix').value=v;anPix();copyScc('rPix','resQk');}
+  else if(tdtt==='cnpj'){document.getElementById('iCNPJ').value=v;await anCNPJ();copyScc('rCNPJ','resQk');}
+  else mkScc('resQk','s-w','⚠️','Tipo não identificado','Use as ferramentas abaixo',[{l:'Entrada',v:v.substring(0,40)}],'Tente uma das ferramentas específicas.',30,null,v,'?');
+}
+function copyScc(src,dst){const s=document.getElementById(src);const d=document.getElementById(dst);if(s&&d){d.innerHTML=s.innerHTML;d.className=s.className;d.style.display='block';}}
+
+// ── ANALISAR LINK ──
+async function anLink(){
+  const link=document.getElementById('iLink').value.trim();if(!link){alert('Cole um link!');return;}
+  setLoad('btnLink',true,'Analisar Link');
+  const url=link.toLowerCase();
+  const encs=['bit.ly','tinyurl.com','cutt.ly','rebrand.ly','ow.ly','t.co','goo.gl','short.io','tiny.cc'];
+  const pals=['ganhe','gratis','free','sorteio','premio','ganhou','avaliador','tarefa','urgente','bloqueado','confirme','brinde','selecionado','resgate','parabens'];
+  const bks=['itau.com.br','bradesco.com.br','bb.com.br','caixa.gov.br','santander.com.br','nubank.com.br','inter.co'];
+  let pts=0;const rows=[];
+  const https=link.startsWith('https://');
+  rows.push({l:'Protocolo',v:https?'<span class="bd bg2">HTTPS ✅</span>':'<span class="bd br">SEM HTTPS ❌</span>'});
+  if(!https)pts+=25;
+  const isE=encs.some(e=>url.includes(e));
+  rows.push({l:'Encurtador',v:isE?'<span class="bd br">Detectado ❌</span>':'<span class="bd bg2">Não ✅</span>'});
+  if(isE)pts+=35;
+  let dom='';
+  try{const u=new URL(link.startsWith('http')?link:'https://'+link);dom=u.hostname.replace('www.','');}catch{dom='URL inválida';pts+=40;}
+  rows.push({l:'Domínio',v:`<strong>${dom}</strong>`});
+  if(bks.some(b=>dom.endsWith(b))){rows.push({l:'Site oficial',v:'<span class="bd bg2">Banco oficial ✅</span>'});pts=Math.max(0,pts-20);}
+  const fp=pals.filter(p=>url.includes(p));
+  rows.push({l:'Palavras suspeitas',v:fp.length>0?`<span class="bd br">${fp.slice(0,3).join(', ')} ❌</span>`:'<span class="bd bg2">Nenhuma ✅</span>'});
+  if(fp.length>0)pts+=fp.length*7;
+  if(dom.length>35){rows.push({l:'Domínio longo',v:'<span class="bd bo2">Suspeito ⚠️</span>'});pts+=10;}
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:150,system:'Responda APENAS JSON sem markdown: {"c":"frase curta pt-br","p":0}',messages:[{role:'user',content:`Link: ${link}`}]})});
+    const d=await r.json();const p=JSON.parse(d.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim());
+    rows.push({l:'IA',v:`<em>${p.c}</em>`});pts+=p.p||0;
+  }catch{rows.push({l:'IA',v:'<span class="bd bgr">Offline</span>'});}
+  pts=Math.min(100,Math.max(0,pts));const score=100-pts;
+  const cl=score<40?'s-d':score<70?'s-w':'s-o';
+  mkScc('rLink',cl,score<40?'❌':score<70?'⚠️':'✅',score<40?'GOLPE — NÃO CLIQUE!':score<70?'SUSPEITO!':'LINK SEGURO',score<40?'Múltiplos sinais de fraude':'',rows,score<40?'Delete e avise quem enviou.':score<70?'Não forneça dados pessoais.':'Nunca forneça senhas por link.',score,'link',link,score<40?'GOLPE':score<70?'SUSPEITO':'SEGURO');
+  setLoad('btnLink',false,'Analisar Link');
+}
+
+// ── BOLETO ──
+function anBoleto(){
+  const raw=document.getElementById('iBol').value.replace(/\D/g,'');if(raw.length<44){alert('Código deve ter pelo menos 44 dígitos!');return;}
+  const bks={'001':'Banco do Brasil','033':'Santander','041':'Banrisul','077':'Inter','104':'Caixa Econômica','212':'Original','237':'Bradesco','260':'Nubank','290':'PagSeguro','336':'C6 Bank','341':'Itaú','380':'PicPay','422':'Safra','748':'Sicredi','756':'Sicoob','070':'BRB','208':'BTG'};
+  let pts=0;const rows=[];
+  if(raw[0]==='8'){rows.push({l:'Tipo',v:'<span class="bd bbl">Concessionária</span>'});const val=parseInt(raw.substring(4,15))/100;if(val>0)rows.push({l:'Valor',v:`<strong>R$ ${val.toFixed(2).replace('.',',')}</strong>`});}
+  else{
+    const cb=raw.substring(0,3);const bk=bks[cb];
+    rows.push({l:'Tipo',v:'<span class="bd bbl">Boleto Bancário</span>'});
+    rows.push({l:'Banco',v:bk?`<span class="bd bg2">${bk} ✅</span>`:'<span class="bd br">NÃO IDENTIFICADO ❌</span>'});
+    if(!bk)pts+=40;
+    if(raw[3]!=='9'){rows.push({l:'Moeda',v:'<span class="bd br">Inválida ❌</span>'});pts+=20;}
+    else rows.push({l:'Moeda',v:'<span class="bd bg2">Real ✅</span>'});
+    const fat=parseInt(raw.substring(5,9));
+    if(fat>0){const base=new Date('1997-10-07');base.setDate(base.getDate()+fat);const venc=base<new Date();rows.push({l:'Vencimento',v:venc?`<span class="bd br">${base.toLocaleDateString('pt-BR')} VENCIDO ❌</span>`:`<span class="bd bg2">${base.toLocaleDateString('pt-BR')} ✅</span>`});if(venc)pts+=15;}
+    const vc=parseInt(raw.substring(9,19));
+    if(vc>0){const vr=vc/100;rows.push({l:'Valor',v:`<strong>R$ ${vr.toFixed(2).replace('.',',')}</strong>`});if(vr>5000){rows.push({l:'Valor alto',v:'<span class="bd bo2">Confirme ⚠️</span>'});pts+=5;}}
+  }
+  pts=Math.min(100,Math.max(0,pts));const score=100-pts;
+  const cl=score<40?'s-d':score<70?'s-w':'s-o';
+  mkScc('rBol',cl,score<40?'❌':score<70?'⚠️':'✅',score<40?'BOLETO SUSPEITO!':score<70?'VERIFIQUE!':'BOLETO VÁLIDO','',rows,score<40?'Não pague. Consulte o Daniel.':'Confirme o beneficiário no app do banco.',score,'boleto',raw.substring(0,20)+'...',score<40?'GOLPE':score<70?'ATENÇÃO':'OK');
+}
+
+// ── TELEFONE ──
+function fmtTel(i){let v=i.value.replace(/\D/g,'');if(v.length>11)v=v.substring(0,11);if(v.length>6)v=`(${v.substring(0,2)}) ${v.substring(2,7)}-${v.substring(7)}`;else if(v.length>2)v=`(${v.substring(0,2)}) ${v.substring(2)}`;i.value=v;}
+async function anTel(){
+  const raw=document.getElementById('iTel').value.replace(/\D/g,'');if(raw.length<10||raw.length>11){alert('Digite com DDD!');return;}
+  setLoad('btnTel',true,'Analisar Telefone');
+  const ddd=raw.substring(0,2);const num=raw.substring(2);
+  const isCel=num.length===9&&num[0]==='9';const isFixo=num.length===8;
+  const DDDS={'11':'SP (capital)','12':'SP','13':'SP','14':'SP','15':'SP','16':'SP','17':'SP','18':'SP','19':'SP (Campinas)','21':'RJ','22':'RJ','24':'RJ','27':'ES','28':'ES','31':'MG (BH)','32':'MG','33':'MG','34':'MG','35':'MG','37':'MG','38':'MG','41':'PR (Curitiba)','42':'PR','43':'PR','44':'PR','45':'PR','46':'PR','47':'SC','48':'SC','49':'SC','51':'RS','53':'RS','54':'RS','55':'RS','61':'DF','62':'GO','63':'TO','64':'GO','65':'MT (Cuiabá)','66':'MT','67':'MS','68':'AC','69':'RO','71':'BA (Salvador)','73':'BA','74':'BA','75':'BA','77':'BA','79':'SE','81':'PE (Recife)','82':'AL','83':'PB','84':'RN','85':'CE (Fortaleza)','86':'PI','87':'PE','88':'CE','89':'PI','91':'PA (Belém)','92':'AM (Manaus)','93':'PA','94':'PA','95':'RR','96':'AP','97':'AM','98':'MA','99':'MA'};
+  const BKO={'08007220977':'Itaú','08007273090':'Bradesco','08007228060':'Banco do Brasil','08006274070':'Caixa','08007260208':'Santander','08007726237':'Nubank'};
+  let pts=0;const rows=[];
+  const est=DDDS[ddd];
+  rows.push({l:'DDD',v:`<strong>${ddd}</strong>`});
+  if(est)rows.push({l:'Região',v:`<span class="bd bg2">${est} ✅</span>`});
+  else{rows.push({l:'DDD',v:'<span class="bd br">DDD inválido ❌</span>'});pts+=50;}
+  rows.push({l:'Tipo',v:isCel?'<span class="bd bg2">Celular ✅</span>':isFixo?'<span class="bd bbl">Fixo</span>':'<span class="bd br">Inválido ❌</span>'});
+  if(!isCel&&!isFixo)pts+=30;
+  const bkO=BKO[raw];
+  if(bkO){rows.push({l:'Central oficial',v:`<span class="bd bg2">${bkO} ✅</span>`});pts=0;}
+  if(/^(\d)\1{6,}$/.test(num)){rows.push({l:'Padrão',v:'<span class="bd br">Sequência inválida ❌</span>'});pts+=50;}
+  rows.push({l:'Aviso',v:'Banco nunca pede senha por telefone'});
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:100,system:'Responda APENAS JSON sem markdown: {"a":"frase curta pt-br","p":0}',messages:[{role:'user',content:`Número: ${raw}`}]})});
+    const d=await r.json();const p=JSON.parse(d.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim());
+    rows.push({l:'IA',v:`<em>${p.a}</em>`});pts+=p.p||0;
+  }catch{rows.push({l:'IA',v:'<span class="bd bgr">Offline</span>'});}
+  pts=Math.min(100,Math.max(0,pts));const score=100-pts;
+  const cl=bkO?'s-o':score<40?'s-d':score<70?'s-w':'s-o';
+  mkScc('rTel',cl,bkO?'✅':score<40?'❌':score<70?'⚠️':'✅',bkO?`OFICIAL — ${bkO}`:score<40?'SUSPEITO!':score<70?'ATENÇÃO!':'LEGÍTIMO','',rows,bkO?'Nunca forneça senha completa.':score<40?'Não retorne. Ligue pelo cartão.':'Banco NUNCA pede senha.',score,'tel',raw,bkO?'OFICIAL':score<40?'SUSPEITO':score<70?'ATENÇÃO':'OK');
+  setLoad('btnTel',false,'Analisar Telefone');
+}
+
+// ── PIX ──
+function vCPF(c){if(c.length!==11||/^(\d)\1+$/.test(c))return false;let s=0;for(let i=0;i<9;i++)s+=parseInt(c[i])*(10-i);let r=(s*10)%11;if(r>=10)r=0;if(r!==parseInt(c[9]))return false;s=0;for(let i=0;i<10;i++)s+=parseInt(c[i])*(11-i);r=(s*10)%11;if(r>=10)r=0;return r===parseInt(c[10]);}
+function vCNPJn(c){if(c.length!==14||/^(\d)\1+$/.test(c))return false;const calc=(n)=>{let s=0,p=n-7;for(let i=0;i<n;i++){s+=parseInt(c[i])*(p<2?p+8:p);p--;}const r=s%11;return r<2?0:11-r;};return calc(12)===parseInt(c[12])&&calc(13)===parseInt(c[13]);}
+function anPix(){
+  const ch=document.getElementById('iPix').value.trim();if(!ch){alert('Digite uma chave!');return;}
+  const n=ch.replace(/\D/g,'');const rows=[];let pts=0;let tipo='';
+  if(/^\d{11}$/.test(n)&&!ch.includes('@')&&!ch.startsWith('+')){tipo='CPF';const ok=vCPF(n);const fmt=n.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4');rows.push({l:'Tipo',v:'<span class="bd bbl">CPF</span>'},{l:'CPF',v:`<strong>${fmt}</strong>`},{l:'Válido',v:ok?'<span class="bd bg2">SIM ✅</span>':'<span class="bd br">INVÁLIDO ❌</span>'});if(!ok)pts+=60;}
+  else if(/^\d{14}$/.test(n)){tipo='CNPJ';const ok=vCNPJn(n);const fmt=n.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,'$1.$2.$3/$4-$5');rows.push({l:'Tipo',v:'<span class="bd bbl">CNPJ</span>'},{l:'CNPJ',v:`<strong>${fmt}</strong>`},{l:'Válido',v:ok?'<span class="bd bg2">SIM ✅</span>':'<span class="bd br">INVÁLIDO ❌</span>'});if(!ok)pts+=60;}
+  else if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ch)){tipo='E-mail';const dom=ch.split('@')[1];const tmp=['tempmail.com','guerrillamail.com','mailinator.com','yopmail.com'];const isT=tmp.some(d=>dom.includes(d));rows.push({l:'Tipo',v:'<span class="bd bbl">E-mail</span>'},{l:'E-mail',v:`<strong>${ch}</strong>`},{l:'Temporário',v:isT?'<span class="bd br">SIM ❌</span>':'<span class="bd bg2">Não ✅</span>'});if(isT)pts+=50;}
+  else if(/^\+55\d{10,11}$/.test(ch)){tipo='Telefone';rows.push({l:'Tipo',v:'<span class="bd bbl">Telefone</span>'},{l:'Número',v:`<strong>${ch}</strong>`},{l:'Formato',v:'<span class="bd bg2">Válido ✅</span>'});}
+  else if(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(ch)){tipo='Aleatória';rows.push({l:'Tipo',v:'<span class="bd bbl">Chave Aleatória</span>'},{l:'Formato',v:'<span class="bd bg2">Válido ✅</span>'});}
+  else{tipo='Inválida';pts+=70;rows.push({l:'Tipo',v:'<span class="bd br">Não reconhecido ❌</span>'});}
+  rows.push({l:'Sempre',v:'Confirme o nome no app do banco'});
+  pts=Math.min(100,Math.max(0,pts));const score=100-pts;
+  const cl=score<40?'s-d':score<70?'s-w':'s-o';
+  mkScc('rPix',cl,score<40?'❌':score<70?'⚠️':'✅',score<40?'CHAVE INVÁLIDA!':score<70?'VERIFIQUE!':'CHAVE VÁLIDA',`Tipo: ${tipo}`,rows,score<40?'Não transfira.':'Confirme o nome do recebedor.',score,'pix',ch.substring(0,28),score<40?'INVÁLIDA':score<70?'VERIFICAR':'VÁLIDA');
+}
+
+// ── CNPJ ──
+function fmtCNPJ(i){let v=i.value.replace(/\D/g,'');if(v.length>14)v=v.substring(0,14);if(v.length>12)v=v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,'$1.$2.$3/$4-$5');else if(v.length>8)v=v.replace(/(\d{2})(\d{3})(\d{3})(\d+)/,'$1.$2.$3/$4');else if(v.length>5)v=v.replace(/(\d{2})(\d{3})(\d+)/,'$1.$2.$3');else if(v.length>2)v=v.replace(/(\d{2})(\d+)/,'$1.$2');i.value=v;}
+async function anCNPJ(){
+  const raw=document.getElementById('iCNPJ').value.replace(/\D/g,'');
+  if(raw.length!==14){alert('CNPJ deve ter 14 dígitos!');return;}
+  setLoad('btnCNPJ',true,'Verificar CNPJ');
+  const ok=vCNPJn(raw);
+  const fmt=raw.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,'$1.$2.$3/$4-$5');
+  const rows=[];
+  rows.push({l:'CNPJ',v:`<strong>${fmt}</strong>`});
+  rows.push({l:'Dígitos verificadores',v:ok?'<span class="bd bg2">VÁLIDOS ✅</span>':'<span class="bd br">INVÁLIDOS ❌</span>'});
+  let pts=ok?0:60;
+  if(!ok){rows.push({l:'Alerta',v:'CNPJ com dígitos incorretos — possivelmente falso ou digitado errado'});}
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:250,system:'Especialista em segurança digital brasileiro. Analise o CNPJ e responda APENAS JSON sem markdown: {"valido":true,"analise":"frase curta pt-br sobre o CNPJ","dica":"dica de segurança pt-br","risco":0}',messages:[{role:'user',content:`CNPJ: ${fmt} — Dígitos verificadores: ${ok?'válidos':'inválidos'}`}]})});
+    const d=await r.json();const p=JSON.parse(d.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim());
+    rows.push({l:'Análise IA',v:`<em>${p.analise}</em>`});
+    rows.push({l:'Dica',v:p.dica});
+    pts+=p.risco||0;
+  }catch{
+    rows.push({l:'Análise IA',v:'<span class="bd bgr">Offline</span>'});
+    if(!ok)rows.push({l:'Orientação',v:'Pesquise este CNPJ em: receita.fazenda.gov.br'});
+  }
+  pts=Math.min(100,Math.max(0,pts));const score=100-pts;
+  const cl=score<40?'s-d':score<70?'s-w':'s-o';
+  mkScc('rCNPJ',cl,score<40?'❌':score<70?'⚠️':'✅',score<40?'CNPJ SUSPEITO!':score<70?'VERIFIQUE!':'CNPJ PARECE VÁLIDO',ok?'Estrutura matemática correta':'Estrutura inválida',rows,score<40?'Não faça negócio com este CNPJ.':'Pesquise em receita.fazenda.gov.br para confirmar.',score,'cnpj',fmt,score<40?'SUSPEITO':score<70?'VERIFICAR':'OK');
+  setLoad('btnCNPJ',false,'Verificar CNPJ');
+}
+
+// ── IMG ──
+let imgB64='';
+function previewImg(e){const f=e.target.files[0];if(!f)return;const reader=new FileReader();reader.onload=ev=>{imgB64=ev.target.result.split(',')[1];const pv=document.getElementById('imgPrev');pv.src=ev.target.result;pv.style.display='block';document.getElementById('imgDrop').style.display='none';};reader.readAsDataURL(f);}
+async function anImg(){
+  if(!imgB64){alert('Selecione uma imagem!');return;}
+  setLoad('btnImg',true,'Analisar com IA');
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:'Especialista em segurança digital brasileiro. Analise a imagem. Responda APENAS JSON sem markdown: {"veredicto":"GOLPE","SUSPEITO" ou "SEGURO","score":0,"titulo":"título pt-br","analise":"2-3 frases pt-br","sinais":["sinal1"],"dica":"dica pt-br"}',messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgB64}},{type:'text',text:'Analise em busca de golpes.'}]}]})});
+    const d=await r.json();const p=JSON.parse(d.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim());
+    const rows=[{l:'Veredicto',v:`<strong>${p.veredicto}</strong>`},{l:'Análise',v:p.analise},...(p.sinais||[]).map(s=>({l:'⚠️',v:s}))];
+    const cl=p.veredicto==='GOLPE'?'s-d':p.veredicto==='SUSPEITO'?'s-w':'s-o';
+    mkScc('rImg',cl,p.veredicto==='GOLPE'?'❌':p.veredicto==='SUSPEITO'?'⚠️':'✅',p.titulo,`Score: ${p.score}/100`,rows,p.dica,p.score,'img','[imagem]',p.veredicto);
+  }catch{const el=document.getElementById('rImg');el.className='scc s-w';el.innerHTML='<div class="scc-h" style="background:linear-gradient(135deg,#e65100,#ff6b2b);padding:14px 16px;"><div class="scc-ti"><h3 style="color:#fff;">⚠️ IA indisponível</h3></div></div><div class="scc-body"><div class="scc-tip">Analise manualmente: pedidos urgentes, links suspeitos, prêmios não solicitados ou identidade falsa de banco.</div></div>';el.style.display='block';}
+  setLoad('btnImg',false,'🤖 Analisar com IA');
+}
+
+// ── CONVERSA ──
+async function anConv(){
+  const txt=document.getElementById('iConv').value.trim();if(txt.length<20){alert('Cole uma conversa mais longa!');return;}
+  setLoad('btnConv',true,'Analisar Conversa');
+  const el=document.getElementById('rConv');el.innerHTML='';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:'Especialista em segurança digital brasileiro. Analise a conversa. Responda APENAS JSON sem markdown: {"veredicto":"GOLPE","SUSPEITO" ou "LEGÍTIMO","nivel":"alto","medio" ou "baixo","resumo":"resumo pt-br","alertas":[{"trecho":"trecho","motivo":"motivo pt-br"}],"dica":"dica pt-br"}',messages:[{role:'user',content:`Conversa:\n${txt}`}]})});
+    const d=await r.json();const p=JSON.parse(d.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim());
+    const cor=p.veredicto==='GOLPE'?'er':p.veredicto==='SUSPEITO'?'war':'ok';
+    const ico=p.veredicto==='GOLPE'?'❌':p.veredicto==='SUSPEITO'?'⚠️':'✅';
+    el.innerHTML=`<div class="conv-line ${cor}">${ico} <strong>${p.veredicto}</strong> — ${p.nivel.toUpperCase()}</div><div class="conv-line ${cor}">${p.resumo}</div>${(p.alertas||[]).map(a=>`<div class="conv-line er"><strong>"${a.trecho.substring(0,50)}..."</strong><br>${a.motivo}</div>`).join('')}<div class="conv-line ok">💡 ${p.dica}</div>`;
+    salvarHist('conv',txt.substring(0,30)+'...',p.veredicto,p.veredicto==='LEGÍTIMO'?90:p.nivel==='alto'?15:40);
+  }catch{el.innerHTML='<div class="conv-line war">⚠️ IA indisponível. Analise manualmente: pedidos urgentes de dinheiro, código SMS, links ou identidade falsa de banco.</div>';}
+  setLoad('btnConv',false,'🤖 Analisar Conversa');
+}
+
+// ── SENHA SEGURA ──
+const SENHA_OPTS={letras:true,numeros:true,simbolos:true};
+function toggleSenhaOpt(tipo,btn){SENHA_OPTS[tipo]=!SENHA_OPTS[tipo];btn.classList.toggle('on',SENHA_OPTS[tipo]);gerarSenha();}
+function gerarSenha(){
+  const len=parseInt(document.getElementById('senhaLen').value);
+  document.getElementById('senhaLenVal').textContent=len;
+  let chars='';
+  if(SENHA_OPTS.letras)chars+='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if(SENHA_OPTS.numeros)chars+='0123456789';
+  if(SENHA_OPTS.simbolos)chars+='!@#$%^&*()_+-=[]{}|;:,.<>?';
+  if(!chars)chars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let senha='';for(let i=0;i<len;i++)senha+=chars[Math.floor(Math.random()*chars.length)];
+  document.getElementById('senhaDisplay').textContent=senha;
+}
+function copiarSenha(){
+  const s=document.getElementById('senhaDisplay').textContent;
+  if(s==='Clique em Gerar'){gerarSenha();return;}
+  navigator.clipboard.writeText(s).then(()=>alert('Senha copiada!')).catch(()=>{prompt('Copie a senha:',s);});
+}
+gerarSenha();
+
+// ── CHAT IA ──
+let chatHistory=[];
+async function enviarChat(){
+  const input=document.getElementById('chatInput');const msg=input.value.trim();if(!msg)return;
+  input.value='';
+  addChatMsg(msg,'user');chatHistory.push({role:'user',content:msg});
+  const typing=addTyping();
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,system:`Você é o ShieldAI, assistente de segurança digital brasileiro do ShieldBR. Responda em português brasileiro de forma clara, direta e amigável. Foco em golpes digitais, fraudes e segurança online. Seja como um amigo especialista. Respostas curtas e práticas. Se a pessoa estiver em golpe AGORA, oriente urgentemente a não transferir nada.`,messages:chatHistory})});
+    const d=await r.json();const resposta=d.content.map(i=>i.text||'').join('');
+    typing.remove();addChatMsg(resposta,'ai');chatHistory.push({role:'assistant',content:resposta});
+    if(chatHistory.length>20)chatHistory=chatHistory.slice(-20);
+  }catch{typing.remove();addChatMsg('⚠️ Sem conexão. Para orientação imediata, chame o Daniel no WhatsApp!','ai');}
+}
+function addChatMsg(txt,tipo){const msgs=document.getElementById('chatMsgs');const d=document.createElement('div');d.className=`chat-msg ${tipo}`;d.textContent=txt;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
+function addTyping(){const msgs=document.getElementById('chatMsgs');const d=document.createElement('div');d.className='chat-typing';d.innerHTML='<span></span><span></span><span></span>';msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
+function enviarSug(btn){document.getElementById('chatInput').value=btn.textContent;enviarChat();}
+
+// ── RISCO ──
+const rR={};
+function sR(cat,val,btn){rR[cat]=val;btn.closest('.r-opts').querySelectorAll('.risco-opt').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+function calcR(){
+  if(!rR.id||!rR.banco||!rR.pix||!rR.hist){alert('Responda tudo!');return;}
+  let pts=0;
+  if(rR.id==='s')pts+=35;else if(rR.id==='m')pts+=15;else pts+=5;
+  if(rR.banco==='s')pts+=20;else if(rR.banco==='av')pts+=10;else pts+=3;
+  if(rR.pix==='s')pts+=15;else pts+=5;
+  if(rR.hist==='s')pts+=30;else if(rR.hist==='t')pts+=15;
+  pts=Math.min(100,pts);
+  document.getElementById('riscoPergs').style.display='none';
+  const el=document.getElementById('riscoMeter');el.style.display='block';
+  const num=document.getElementById('rNum');const lbl=document.getElementById('rLbl');const bar=document.getElementById('rBar');const dica=document.getElementById('rDica');
+  num.textContent=pts;num.style.color=pts>=70?'#e63946':pts>=40?'#ff6b2b':'#2dc653';
+  bar.style.width=pts+'%';bar.style.background=pts>=70?'linear-gradient(90deg,#e63946,#c1121f)':pts>=40?'linear-gradient(90deg,#ff6b2b,#e65100)':'linear-gradient(90deg,#2dc653,#1a8a35)';
+  lbl.textContent=pts>=70?'🔴 VULNERABILIDADE ALTA':pts>=40?'🟠 MÉDIA':'🟢 BAIXA';
+  lbl.style.color=pts>=70?'#e63946':pts>=40?'#ff6b2b':'#2dc653';
+  const dicas={'alto':'Vulnerabilidade alta. Recomendamos:\n• Ativar verificação em 2 etapas em todos os apps\n• Criar palavra secreta com a família\n• Verificar tudo no ShieldBR antes de clicar\n• Consultar o Daniel para orientação personalizada','medio':'Vulnerabilidade moderada:\n• Verifique sempre links e boletos antes de agir\n• Desconfie de qualquer ligação pedindo dados bancários\n• Ative notificações de transações no banco','baixo':'Bom perfil de segurança!\n• Continue verificando no ShieldBR\n• Compartilhe com quem precisa de proteção'};
+  dica.textContent=dicas[pts>=70?'alto':pts>=40?'medio':'baixo'];
+}
+function resetR(){Object.keys(rR).forEach(k=>delete rR[k]);document.querySelectorAll('.risco-opt').forEach(b=>b.classList.remove('on'));document.getElementById('riscoMeter').style.display='none';document.getElementById('riscoPergs').style.display='block';}
+
+// ── SIMULADOR ──
+const CENS=[
+  {nome:'Desconhecido',msgs:[{r:true,t:'Oi! Você foi selecionado para receber R$1.500 da Shopee! 🎉'},{r:true,t:'Clique para resgatar: http://shopee-premio.site/resgate123'}],q:'O que você deve fazer?',ops:[{t:'Clicar no link',ok:false},{t:'Ignorar — é phishing!',ok:true},{t:'Perguntar mais detalhes',ok:false}],exp:'Links de prêmio não solicitado são phishing. NUNCA clique.'},
+  {nome:'Suporte WhatsApp',msgs:[{r:true,t:'Olá! Sou do suporte WhatsApp. Sua conta será desativada em 24h.'},{r:true,t:'Confirme o código de 6 dígitos que chegou por SMS.'}],q:'O que você deve fazer?',ops:[{t:'Passar o código',ok:false},{t:'Bloquear — nunca pede código!',ok:true},{t:'Pedir para aguardar',ok:false}],exp:'WhatsApp NUNCA pede código SMS. Com ele tomam sua conta.'},
+  {nome:'Central Itaú',msgs:[{r:true,t:'Segurança Itaú. Detectamos transação suspeita de R$3.200.'},{r:true,t:'Para cancelar, transfira para uma conta temporária segura.'}],q:'O que você deve fazer?',ops:[{t:'Fazer a transferência',ok:false},{t:'Desligar e ligar no 0800 do Itaú',ok:true},{t:'Pedir mais detalhes',ok:false}],exp:'Banco NUNCA pede transferência para "conta segura". Desligue.'},
+  {nome:'Familiar',msgs:[{r:true,t:'Pai, sou eu. Quebrei meu celular, esse é meu número novo.'},{r:true,t:'Precisa me mandar R$800 urgente. Pix: 123.456.789-00'},{r:true,t:'Não conta pra mãe ainda.'}],q:'Como você deve agir?',ops:[{t:'Mandar os R$800',ok:false},{t:'Ligar no número antigo do filho',ok:true},{t:'Mandar R$200 primeiro',ok:false}],exp:'Golpe do filho em apuros. O sigilo é sinal de fraude. SEMPRE ligue pelo número que você já tem.'},
+];
+let sIdx=0,sPts=0;
+function carregarCen(){
+  if(sIdx>=CENS.length){document.getElementById('simStatus').textContent=`✅ Completo! Acertou ${sPts}/${CENS.length}`;document.getElementById('simBar').style.width='100%';addXP(sPts*20);if(sPts>=3){document.getElementById('b-sim').style.display='flex';lancarConfeti();}return;}
+  const c=CENS[sIdx];
+  document.getElementById('simNome').textContent=c.nome;
+  const msgs=document.getElementById('simMsgs');msgs.innerHTML='';
+  document.getElementById('simFb').style.display='none';
+  document.getElementById('simOpts').innerHTML='<div style="text-align:center;color:var(--mt);font-size:12px;padding:10px;">Lendo a conversa...</div>';
+  c.msgs.forEach((m,i)=>{setTimeout(()=>{const d=document.createElement('div');d.className=`sim-msg ${m.r?'recv':'sent'}`;d.innerHTML=`${m.t}<div class="sim-time">${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div>`;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;if(i===c.msgs.length-1)mostrarOpsSim(c);},i*700);});
+}
+function mostrarOpsSim(c){
+  const div=document.getElementById('simOpts');
+  div.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--mt);margin-bottom:7px;">${c.q}</div>`;
+  c.ops.forEach(op=>{const b=document.createElement('button');b.className='sim-opt';b.textContent=op.t;b.onclick=()=>{div.querySelectorAll('.sim-opt').forEach((x,i)=>{x.disabled=true;if(c.ops[i].ok)x.classList.add('ok');else x.classList.add('er');});const fb=document.getElementById('simFb');if(op.ok){sPts++;document.getElementById('simPts').textContent=sPts*25;fb.className='sim-fb ok';}else fb.className='sim-fb er';fb.textContent=(op.ok?'🎯 CORRETO! ':'❌ ERRADO! ')+c.exp;fb.style.display='block';document.getElementById('simBar').style.width=`${((sIdx+1)/CENS.length)*100}%`;sIdx++;setTimeout(carregarCen,2500);};div.appendChild(b);});
+}
+carregarCen();
+
+// ── QUIZ ──
+const QS=[
+  {q:'Alguém pede o código SMS do WhatsApp. Você passa?',ops:['Sim.','NUNCA! É roubo de conta.','Só com identificação.'],c:1,e:'O código nunca deve ser compartilhado.'},
+  {q:'Recebeu R$500 de Pix "errado". Pedem devolução. O que faz?',ops:['Devolvo logo.','Verifico no extrato antes.','Devolvo metade.'],c:1,e:'O Pix inicial pode ser fraudulento. Verifique no extrato.'},
+  {q:'"Você ganhou um iPhone! Clique aqui." O que faz?',ops:['Clico.','Deleto — é golpe!','Clico só pra ver.'],c:1,e:'Prêmio não solicitado é sempre phishing.'},
+  {q:'Banco Central ligou pedindo transferência urgente.',ops:['Faço a transferência.','Desligo e ligo no cartão.','Peço aguardar.'],c:1,e:'Banco Central NUNCA liga pedindo transferências.'},
+  {q:'"Filho" com voz idêntica pediu R$1.000 urgente.',ops:['Mando — reconheci!','Ligo no número antigo dele.','Mando R$500 primeiro.'],c:1,e:'IA clona vozes. SEMPRE ligue pelo número que você já tem.'},
+  {q:'Boleto chegou por e-mail. O que você faz?',ops:['Pago se o valor estiver certo.','Verifico no ShieldBR e no app do banco.','Pago se vier da empresa.'],c:1,e:'Boletos podem ser adulterados. Sempre verifique.'},
+  {q:'"Papai, quebrei meu celular. Me manda R$400."',ops:['Mando logo.','Ligo no número antigo do filho.','Mando R$200 primeiro.'],c:1,e:'Golpe do filho. O sigilo é sinal claro de fraude.'},
+  {q:'Empresa pede depósito de R$200 para você trabalhar como avaliador.',ops:['Pago — parece legítimo.','NÃO! Empresa séria não pede depósito.','Pago e vejo se é verdade.'],c:1,e:'Nenhuma empresa legítima cobra para você trabalhar.'},
+];
+let qIdx=0,qPts=0;
+function carregarQz(){
+  if(qIdx>=QS.length){
+    document.getElementById('qzQ').textContent='🎉 Quiz completo!';
+    document.getElementById('qzOpts').innerHTML='';document.getElementById('qzProg').textContent='';document.getElementById('qzBar').style.width='100%';
+    const pct=Math.round(qPts/QS.length*100);
+    const fb=document.getElementById('qzFb');
+    fb.textContent=`Acertou ${qPts}/${QS.length} (${pct}%). ${pct>=75?'🏆 Ótimo!':'⚠️ Pratique mais!'}`;
+    fb.className=`qz-fb ${pct>=50?'ok':'er'}`;fb.style.display='block';
+    addXP(qPts*15);
+    if(pct>=75){document.getElementById('certBox').style.display='block';document.getElementById('certNome').textContent=`APROVADO ${pct}%`;document.getElementById('b-quiz').style.display='flex';lancarConfeti();}
+    return;
+  }
+  const q=QS[qIdx];
+  document.getElementById('qzQ').textContent=q.q;
+  document.getElementById('qzProg').textContent=`Pergunta ${qIdx+1} de ${QS.length}`;
+  document.getElementById('qzBar').style.width=`${(qIdx/QS.length)*100}%`;
+  document.getElementById('qzFb').style.display='none';
+  const div=document.getElementById('qzOpts');div.innerHTML='';
+  q.ops.forEach((op,i)=>{const b=document.createElement('button');b.className='qz-opt';b.innerHTML=`<span>${['A','B','C'][i]}</span>${op}`;b.onclick=()=>{div.querySelectorAll('.qz-opt').forEach((x,j)=>{x.disabled=true;if(j===q.c)x.classList.add('ok');});const fb=document.getElementById('qzFb');if(i===q.c){qPts++;document.getElementById('qzPts').textContent=qPts*15;b.classList.add('ok');fb.textContent=`🎯 CORRETO! ${q.e}`;fb.className='qz-fb ok';}else{b.classList.add('er');fb.textContent=`❌ Errado. ${q.e}`;fb.className='qz-fb er';}fb.style.display='block';qIdx++;setTimeout(carregarQz,2200);};div.appendChild(b);});
+}
+carregarQz();
+
+// ── MURAL ──
+let mural=JSON.parse(localStorage.getItem('sbr5_mural')||'[]');
+const AVATARES=['#e63946','#ff6b2b','#7209b7','#0096c7','#2dc653','#f59e0b'];
+function renderMural(){
+  const el=document.getElementById('muralItens');
+  if(!mural.length){el.innerHTML='<div class="empty"><span>📢</span>Seja o primeiro a postar!</div>';return;}
+  el.innerHTML=mural.slice(-12).reverse().map((d,i)=>`
+    <div class="mural-item">
+      <div class="mural-top">
+        <div class="mural-av" style="background:${AVATARES[i%AVATARES.length]};">${(d.autor||'A')[0].toUpperCase()}</div>
+        <div><div class="mural-nome">${d.autor||'Anônimo'}</div><div class="mural-data">${d.data}</div></div>
+      </div>
+      <div class="mural-tipo">${d.tipo}</div>
+      <div class="mural-desc">${d.desc}</div>
+      <div class="mural-likes">
+        <button class="like-btn ${d.liked?'liked':''}" onclick="likeItem(${i},this)">👍 ${d.likes||0}</button>
+        <button class="like-btn" onclick="compartilharDenuncia('${d.tipo}','${d.desc.substring(0,50)}')">📤 Compartilhar</button>
+      </div>
+    </div>`).join('');
+}
+function likeItem(i,btn){const idx=mural.length-1-i;if(mural[idx]){mural[idx].likes=(mural[idx].likes||0)+1;mural[idx].liked=true;localStorage.setItem('sbr5_mural',JSON.stringify(mural));btn.classList.add('liked');btn.textContent=`👍 ${mural[idx].likes}`;}}
+function denunciar(){
+  const tp=document.getElementById('tpGolpe').value;const desc=document.getElementById('descGolpe').value.trim();
+  if(!tp){alert('Escolha o tipo!');return;}if(!desc||desc.length<10){alert('Descreva mais!');return;}
+  mural.push({tipo:tp,desc,autor:USER.nome||'Anônimo',data:new Date().toLocaleString('pt-BR'),likes:0});
+  localStorage.setItem('sbr5_mural',JSON.stringify(mural));
+  document.getElementById('tpGolpe').value='';document.getElementById('descGolpe').value='';
+  const m=document.getElementById('msgDen');m.textContent='✅ Publicado no mural!';m.style.cssText='display:block;color:#1a8a35;background:#e8f5e9;padding:10px;border-radius:10px;font-weight:700;font-size:12px;';
+  renderMural();addXP(20);document.getElementById('b-den').style.display='flex';
+  setTimeout(()=>m.style.display='none',3000);
+}
+function compartilharDenuncia(tipo,desc){window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(`⚠️ *Alerta de golpe no ShieldBR:*\nTipo: ${tipo}\n"${desc}..."\n\nVerifique golpes antes de agir 👇\n${APP_URL}`),'_blank');}
+renderMural();
+
+// ── DICIONÁRIO ──
+const DIC=[
+  {t:'Golpe do Pix Errado',tags:['pix','transferência','devolução'],desc:'Alegam ter enviado Pix por engano e pedem devolução. O Pix recebido é fraudulento e some depois.',como:'✅ Verifique no extrato antes de qualquer devolução.'},
+  {t:'Clonagem de WhatsApp',tags:['whatsapp','código','sms'],desc:'Pedem o código de 6 dígitos recebido por SMS. Com ele acessam sua conta e pedem dinheiro a todos.',como:'✅ Nunca repasse o código SMS. Ative verificação em 2 etapas.'},
+  {t:'Phishing',tags:['link','site','email','phishing'],desc:'Link falso que imita site real de banco ou loja para roubar seus dados de login e senha.',como:'✅ Verifique o domínio completo. Use o ShieldBR antes de clicar.'},
+  {t:'Falso Banco Central',tags:['banco','central','ligação','bloqueado'],desc:'Ligam fingindo ser do Banco Central dizendo que sua conta está bloqueada e pedindo transferência.',como:'✅ Banco Central NUNCA liga pedindo transferências. Desligue.'},
+  {t:'Voz Clonada por IA',tags:['ia','voz','clone','inteligência','artificial'],desc:'IA clona a voz de familiar com poucos segundos de áudio e liga pedindo dinheiro urgente.',como:'✅ Crie uma palavra secreta de emergência com a família.'},
+  {t:'Boleto Falso',tags:['boleto','código','barras'],desc:'Boleto adulterado que parece legítimo mas desvia dinheiro para conta do golpista.',como:'✅ Verifique sempre o código de barras no app do banco.'},
+  {t:'Avaliador Pago / Pirâmide',tags:['avaliador','trabalho','emprego','depósito'],desc:'Oferecem renda fácil avaliando produtos online mas pedem depósito inicial que nunca é devolvido.',como:'✅ Nenhuma empresa séria cobra para você trabalhar.'},
+  {t:'Falso Prêmio / Sorteio',tags:['prêmio','sorteio','ganhou','shopee','shein','frete'],desc:'Mensagem de prêmio que pede dados do cartão para pagar "taxa de entrega".',como:'✅ Se não participou de sorteio, não ganhou nada.'},
+  {t:'Falso Parente em Apuros',tags:['filho','parente','acidente','apuros','celular'],desc:'Pedem dinheiro urgente fingindo ser filho ou neto em emergência, pedindo sigilo total.',como:'✅ Ligue diretamente pelo número que você já tem salvo.'},
+  {t:'Falso Entregador',tags:['entregador','correios','encomenda','taxa'],desc:'Ligam dizendo ter encomenda sua e pedem taxa para liberar ou dados pessoais.',como:'✅ Rastreie nos Correios. Nunca pague taxa por telefone.'},
+  {t:'SIM Swap',tags:['chip','sim','operadora','número'],desc:'Golpistas convencem a operadora a transferir seu número para chip novo, assumindo todos seus apps.',como:'✅ Ative bloqueio de portabilidade na sua operadora.'},
+  {t:'Maquininha Adulterada',tags:['maquininha','cartão','senha','posto'],desc:'Maquininhas modificadas capturam dados do cartão em estabelecimentos suspeitos.',como:'✅ Cubra o teclado ao digitar a senha. Prefira aproximação.'},
+  {t:'Engenharia Social',tags:['engenharia','social','dados','conversa','manipulação'],desc:'Manipulam a vítima em conversa para obter informações confidenciais como senhas e dados bancários.',como:'✅ Nenhuma empresa legítima precisa da sua senha completa.'},
+  {t:'CNPJ Falso',tags:['cnpj','empresa','falso','fraude','documento'],desc:'Golpistas criam empresas com CNPJ falsificado ou usam CNPJs de empresas encerradas para aplicar fraudes.',como:'✅ Sempre verifique o CNPJ em receita.fazenda.gov.br antes de negociar.'},
+];
+function buscarDic(){
+  const q=document.getElementById('dicSearch').value.toLowerCase().trim();
+  const el=document.getElementById('dicResultados');
+  const found=q?DIC.filter(d=>d.t.toLowerCase().includes(q)||d.tags.some(tg=>tg.includes(q))||d.desc.toLowerCase().includes(q)):DIC;
+  el.innerHTML=found.map(d=>`<div class="dic-card"><div class="dic-tag">${d.tags[0]}</div><div class="dic-title">${d.t}</div><div class="dic-desc">${d.desc}</div><div class="dic-como">${d.como}</div></div>`).join('');
+}
+buscarDic();
+
+// ── GUIAS FAMÍLIA ──
+const GUIAS={
+  mae:{t:'🛡️ Como Proteger sua Mãe/Pai',steps:[{i:'📱',t:'Configure o WhatsApp',d:'Ative verificação em 2 etapas: Configurações → Conta → Verificação. PIN de 6 dígitos que só a família sabe.'},{i:'🔑',t:'Crie uma Palavra Secreta',d:'Uma palavra que só a família conhece. Se alguém ligar pedindo dinheiro, pergunte a palavra. Se não souber — é golpe.'},{i:'❌',t:'A Regra de Ouro',d:'Banco NUNCA liga pedindo transferência. Código SMS NUNCA deve ser repassado. Prêmio sem participar NÃO EXISTE.'},{i:'📲',t:'Salve o ShieldBR',d:'Salve o app no celular deles para consultar qualquer coisa suspeita antes de agir.'}]},
+  avo:{t:'🛡️ Como Proteger sua Avó/Avô',steps:[{i:'📞',t:'Não Atender Desconhecido',d:'Não atender números não salvos. Se for importante, manda mensagem.'},{i:'🔑',t:'Palavra Secreta de Emergência',d:'Se filho ou neto ligar sem saber a palavra — é golpe de voz clonada por IA.'},{i:'💸',t:'Nunca Transfira sem Confirmar',d:'Antes de qualquer Pix, ligue para o familiar pelo número que já conhece.'},{i:'🛡️',t:'ShieldBR sempre à mão',d:'Mostre como verificar links e boletos aqui antes de qualquer ação.'}]},
+  filho:{t:'🛡️ Como Proteger seu Filho',steps:[{i:'🎮',t:'Golpes em Jogos Online',d:'Sites que prometem itens grátis são sempre golpes ou malware.'},{i:'📱',t:'Privacidade nas Redes',d:'Endereço e escola nunca devem ser compartilhados online.'},{i:'🔗',t:'Links Suspeitos',d:'Qualquer link de prêmio deve ser verificado no ShieldBR primeiro.'},{i:'💬',t:'Segurança em Conversas',d:'Se alguém pedir dinheiro por mensagem, confirme por chamada antes.'}]},
+  conj:{t:'🛡️ Como Proteger seu Cônjuge',steps:[{i:'🏦',t:'Alertas do Banco',d:'Configure notificações para cada transação. Identifique uso indevido imediatamente.'},{i:'📧',t:'E-mails e Boletos',d:'Todo boleto por e-mail deve ser verificado no ShieldBR antes de pagar.'},{i:'🔐',t:'Senhas Diferentes',d:'Cada conta com senha única. Use o gerador do ShieldBR.'},{i:'📱',t:'Verificação em 2 Etapas',d:'Ativar em: banco, e-mail, WhatsApp e redes sociais.'}]},
+  amigo:{t:'🛡️ Como Proteger um Amigo',steps:[{i:'📲',t:'Compartilhe o ShieldBR',d:'Mande o link explicando para que serve.'},{i:'🗣️',t:'Fale sobre os Golpes',d:'Conte sobre voz clonada por IA, Pix errado e código SMS.'},{i:'🔑',t:'Sugira a Palavra Secreta',d:'Sugira que a família crie uma palavra secreta de emergência.'},{i:'💬',t:'Esteja Disponível',d:'Diga que pode ajudar a verificar qualquer coisa suspeita.'}]},
+};
+function gerarGuia(){
+  const p=document.getElementById('perfilFam').value;if(!p){alert('Escolha quem proteger!');return;}
+  const g=GUIAS[p];
+  const el=document.getElementById('protResult');el.style.display='block';
+  el.innerHTML=`<div style="font-size:15px;font-weight:800;margin-bottom:12px;color:var(--red);">${g.t}</div>`+
+    g.steps.map(s=>`<div class="prot-card"><h4>${s.i} ${s.t}</h4><p>${s.d}</p></div>`).join('')+
+    `<button class="btn bg" onclick="compGuia('${p}')" style="margin-top:4px;">📤 Enviar pelo WhatsApp</button>`;
+  el.scrollIntoView({behavior:'smooth'});
+}
+function compGuia(p){const g=GUIAS[p];window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(`🛡️ ${g.t}\n\nShieldBR — Escudo Digital do Brasil\n${APP_URL}\n\nGratuito! ❤️`),'_blank');}
+
+// ── AFILIADO ──
+function copiarAfil(){
+  const afilNome=(USER.nome||'Daniel').toUpperCase().replace(/ /g,'_');
+  const link=`${APP_URL}?ref=${afilNome}`;
+  navigator.clipboard.writeText(link).then(()=>alert('Link copiado!')).catch(()=>{prompt('Copie o link:',link);});
+}
+
+// ── EXTRAS ──
+function compCert(){window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(`🏆 Me certifiquei no ShieldBR Anti-Golpe 2026!\n🛡️ Aprendi a identificar todos os golpes!\nFaça você também 👇\n${APP_URL}`),'_blank');}
+function gerarLink(){const nome=document.getElementById('nomeEnvio').value.trim()||'seu familiar';const msg=`🛡️ Oi! Sou ${nome}!\n\nUsa o ShieldBR para verificar links, boletos, telefones e Pix suspeitos. Gratuito!\n${APP_URL}\n\nJá protegeu 893 brasileiros! ❤️`;window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(msg),'_blank');const m=document.getElementById('msgFam');m.textContent='✅ Abrindo WhatsApp!';m.style.display='block';}
+function irPrem(){window.open('https://wa.me/5566992388467?text='+encodeURIComponent('Olá Daniel! Quero o Plano Premium do ShieldBR!'),'_blank');}
+function comp(){window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(`🛡️ Usa o ShieldBR pra checar links, boletos e golpes! Gratuito!\n${APP_URL}`),'_blank');}
+</script>
 </body>
 </html>
+
 
 
 
